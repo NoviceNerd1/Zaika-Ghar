@@ -1,0 +1,36 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    /* === File Layout === */
+    "rootDir": "./", // source root
+    "outDir": "./dist", // compiled output
+
+    /* === Module/Environment === */
+    "module": "NodeNext", // correct casing is important
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "types": ["node"], // enable Node globals/types
+    "esModuleInterop": true, // smoother default-import interop
+    "allowSyntheticDefaultImports": true,
+
+    /* === Outputs === */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* === Strictness === */
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* === Style / Misc === */
+    "jsx": "react-jsx",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": ["index.ts", "src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
