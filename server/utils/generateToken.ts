@@ -14,7 +14,6 @@ export const generateToken = (res: Response, user: IUserDocument) => {
     secure: isProduction, // MUST be true for sameSite: 'none'
     sameSite: isProduction ? "none" : "lax", // 'none' for cross-site in production
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    domain: isProduction ? ".yourdomain.com" : undefined, // Add your domain if needed
   });
 
   return token;
