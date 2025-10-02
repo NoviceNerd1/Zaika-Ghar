@@ -45,7 +45,7 @@ const Restaurant = () => {
 
     const result = restaurantFromSchema.safeParse(input);
     if (!result.success) {
-      const fieldErrors = result.error.formErrors.fieldErrors;
+      const fieldErrors = result.error.flatten().fieldErrors;
       setErrors(fieldErrors as Partial<RestaurantFromSchema>);
       return;
     }
@@ -92,7 +92,7 @@ const Restaurant = () => {
     };
     fetchRestaurant();
     console.log(restaurant);
-  }, []);
+  }, [getRestaurant, restaurant]);
 
   return (
     <div className="max-w-4xl mx-auto my-8 p-6">

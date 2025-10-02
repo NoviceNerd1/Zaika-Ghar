@@ -10,7 +10,7 @@ axios.defaults.withCredentials = true;
 type User = {
   fullname: string;
   email: string;
-  contact: number;
+  contact: string; // Changed to string to match form input
   address: string;
   city: string;
   country: string;
@@ -19,10 +19,8 @@ type User = {
   isVerified: boolean;
 };
 
-// Define proper types for updateProfile input
 type UpdateProfileInput = Partial<Omit<User, "admin" | "isVerified">>;
 
-// Update the UserState type in your store
 type SignupResult = {
   success: boolean;
   error?: string;
@@ -31,7 +29,7 @@ type SignupResult = {
 
 type UserState = {
   user: User | null;
-  token: string | null; // store JWT
+  token: string | null;
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
   loading: boolean;
@@ -49,19 +47,25 @@ export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isCheckingAuth: true,
       loading: false,
-      // signup api implementation
-      // Update the signup function in your store to return a result
-      signup: async (input: SignupInputState) => {
+
+      signup: async (input: SignupInputState): Promise<SignupResult> => {
         try {
           set({ loading: true });
+
+          // Convert contact to number for API if needed, or keep as string
+          // const apiInput = {
+          //   ...input,
+          //   contact: parseInt(input.contact), // Convert to number for API
+          // };
+
           const response = await axios.post(`${API_END_POINT}/signup`, input, {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           });
+
           if (response.data.success) {
             toast.success(response.data.message);
             set({
@@ -70,7 +74,16 @@ export const useUserStore = create<UserState>()(
               token: response.data.token,
               isAuthenticated: true,
             });
-            return { success: true, error: null };
+            return { success: true };
+          } else {
+            const errorMessage = response.data.message || "Signup failed";
+            toast.error(errorMessage);
+            set({ loading: false });
+            return {
+              success: false,
+              error: errorMessage,
+              shouldRedirect: false,
+            };
           }
         } catch (error: unknown) {
           let errorMessage = "An unexpected error occurred";
@@ -78,7 +91,6 @@ export const useUserStore = create<UserState>()(
 
           if (axios.isAxiosError(error)) {
             errorMessage = error.response?.data?.message || "Signup failed";
-            // Check if it's an email already exists error
             if (errorMessage.toLowerCase().includes("already exist")) {
               shouldRedirect = true;
             }
@@ -86,10 +98,13 @@ export const useUserStore = create<UserState>()(
           } else {
             toast.error(errorMessage);
           }
+
           set({ loading: false });
           return { success: false, error: errorMessage, shouldRedirect };
         }
       },
+
+      // ... rest of your store methods remain the same
       login: async (input: LoginInputState) => {
         try {
           set({ loading: true });
@@ -116,6 +131,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       verifyEmail: async (verificationCode: string) => {
         try {
           set({ loading: true });
@@ -147,6 +163,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       checkAuthentication: async () => {
         try {
           set({ isCheckingAuth: true });
@@ -159,9 +176,11 @@ export const useUserStore = create<UserState>()(
             });
           }
         } catch (error: unknown) {
+          console.error("Authentication failed", error);
           set({ isAuthenticated: false, isCheckingAuth: false });
         }
       },
+
       logout: async () => {
         try {
           set({ loading: true });
@@ -179,6 +198,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       forgotPassword: async (email: string) => {
         try {
           set({ loading: true });
@@ -201,6 +221,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       resetPassword: async (token: string, newPassword: string) => {
         try {
           set({ loading: true });
@@ -223,6 +244,7 @@ export const useUserStore = create<UserState>()(
           set({ loading: false });
         }
       },
+
       updateProfile: async (input: UpdateProfileInput) => {
         try {
           const response = await axios.put(

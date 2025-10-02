@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IMenu {
-  // _id:mongoose.Schema.Types.ObjectId;
+  //_id: mongoose.Schema.Types.ObjectId;
   name: string;
   description: string;
   price: number;
@@ -34,4 +34,4 @@ const menuSchema = new mongoose.Schema<IMenuDocument>(
   { timestamps: true }
 );
 
-export const Menu = mongoose.model("Menu", menuSchema);
+export const Menu = mongoose.model<IMenuDocument>("Menu", menuSchema);

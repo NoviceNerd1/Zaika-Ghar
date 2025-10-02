@@ -26,7 +26,7 @@ const Cart = () => {
     removeFromTheCart, // Add remove item functionality
   } = useCartStore();
 
-  let totalAmount = cart.reduce((acc, ele) => {
+  const totalAmount = cart.reduce((acc, ele) => {
     return acc + ele.price * ele.quantity;
   }, 0);
 

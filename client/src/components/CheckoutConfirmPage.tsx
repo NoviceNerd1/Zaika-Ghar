@@ -549,6 +549,7 @@ const CheckoutConfirmPage = ({
         })),
         deliveryDetails: input,
         restaurantId: currentRestaurantId,
+        createdAt: new Date(),
       };
 
       await createCheckoutSession(checkoutData);

@@ -49,7 +49,7 @@ const AddMenu = () => {
     e.preventDefault();
     const result = menuSchema.safeParse(input);
     if (!result.success) {
-      const fieldErrors = result.error.formErrors.fieldErrors;
+      const fieldErrors = result.error.flatten().fieldErrors;
       setError(fieldErrors as Partial<MenuFromSchema>);
       return;
     }

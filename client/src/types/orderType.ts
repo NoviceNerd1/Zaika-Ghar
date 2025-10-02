@@ -15,7 +15,7 @@ export type CheckoutSessionRequest = {
     country: string;
   };
   restaurantId: string;
-  createdAt: string;
+  createdAt?: Date;
 };
 
 export interface Orders extends CheckoutSessionRequest {

@@ -7,7 +7,7 @@ import { Loader2, LockKeyhole, Mail, PhoneOutgoing, User } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-// Move InputField component outside of Signup to prevent re-renders
+// InputField component remains the same
 const InputField = ({
   name,
   type,
@@ -46,7 +46,7 @@ const Signup = () => {
     fullname: "",
     email: "",
     password: "",
-    contact: "",
+    contact: "", // Now matches the string type
   });
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
   const { signup, loading } = useUserStore();
@@ -54,7 +54,15 @@ const Signup = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setInput((prev) => ({ ...prev, [name]: value }));
+
+    // For contact field, only allow numbers
+    if (name === "contact") {
+      const numericValue = value.replace(/\D/g, ""); // Remove non-digit characters
+      setInput((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setInput((prev) => ({ ...prev, [name]: value }));
+    }
+
     // Clear error when user starts typing
     if (errors[name as keyof SignupInputState]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
@@ -67,6 +75,7 @@ const Signup = () => {
     // Form validation
     const result = userSignupSchema.safeParse(input);
     if (!result.success) {
+      console.log("Zod validation errors:", result.error.flatten());
       const fieldErrors = result.error.flatten().fieldErrors;
       setErrors(fieldErrors as Partial<SignupInputState>);
       return;
@@ -74,6 +83,7 @@ const Signup = () => {
 
     // API call
     try {
+      console.log("Calling signup API with:", input); // Debug log
       const signupResult = await signup(input);
 
       if (signupResult.success) {
@@ -83,7 +93,7 @@ const Signup = () => {
         // Email already exists - redirect to login after a delay
         setTimeout(() => {
           navigate("/login");
-        }, 2000); // 2 second delay to let user see the toast message
+        }, 2000);
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -138,8 +148,8 @@ const Signup = () => {
             />
             <InputField
               name="contact"
-              type="text"
-              placeholder="Contact"
+              type="tel" // Changed to tel for better mobile experience
+              placeholder="Contact Number"
               icon={PhoneOutgoing}
               value={input.contact}
               onChange={handleInputChange}

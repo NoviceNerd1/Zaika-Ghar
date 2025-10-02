@@ -4,7 +4,7 @@ export interface IUser {
   fullname: string;
   email: string;
   password: string;
-  contact: number;
+  contact: string;
   address: string;
   city: string;
   country: string;
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       required: true,
     },
     contact: {
-      type: Number,
+      type: String,
       required: true,
     },
     address: {

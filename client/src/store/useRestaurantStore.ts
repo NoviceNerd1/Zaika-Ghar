@@ -117,7 +117,8 @@ export const useRestaurantStore = create<RestaurantState>()(
           } else {
             throw new Error(response.data.message || "Search failed");
           }
-        } catch (error) {
+        } catch (error: unknown) {
+          console.error("Restaurant search failed:", error);
           set({
             loading: false,
             searchedRestaurant: {
@@ -196,7 +197,8 @@ export const useRestaurantStore = create<RestaurantState>()(
           if (response.data.success) {
             set({ singleRestaurant: response.data.restaurant, loading: false });
           }
-        } catch (error) {
+        } catch (error: unknown) {
+          console.error("Restaurant search failed:", error);
           set({ loading: false, singleRestaurant: null });
         }
       },
@@ -208,7 +210,8 @@ export const useRestaurantStore = create<RestaurantState>()(
           if (response.data.success) {
             set({ restaurantOrder: response.data.orders, loading: false });
           }
-        } catch (error) {
+        } catch (error: unknown) {
+          console.error("Restaurant order search failed:", error);
           set({ loading: false, restaurantOrder: [] });
         }
       },

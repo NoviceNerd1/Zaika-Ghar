@@ -14,6 +14,8 @@ import {
 
 export const signup = async (req: Request, res: Response) => {
   console.log("REQ.BODY:", req.body);
+  console.log("Contact type:", typeof req.body.contact); // Debug log
+  console.log("Contact value:", req.body.contact); // Debug log
   try {
     const { fullname, email, password, contact } = req.body;
 
@@ -31,13 +33,19 @@ export const signup = async (req: Request, res: Response) => {
       fullname,
       email,
       password: hashedPassword,
-      contact: Number(contact),
+      contact: contact,
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
     });
     generateToken(res, user);
 
-    await sendVerificationEmail(email, verificationToken);
+    // Handle email sending with try-catch to prevent 500 errors
+    try {
+      await sendVerificationEmail(email, verificationToken);
+    } catch (emailError) {
+      console.log("Email sending failed, but user created:", emailError);
+      // Continue even if email fails
+    }
 
     const userWithoutPassword = await User.findOne({ email }).select(
       "-password"

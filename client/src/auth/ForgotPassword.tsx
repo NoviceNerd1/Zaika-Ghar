@@ -41,9 +41,14 @@ export default function ForgotPassword() {
       } else {
         toast.error(data.message || "Failed to send reset link");
       }
-    } catch (err: any) {
-      console.error("Forgot password error:", err);
-      toast.error(err.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Forgot password error:", err.message);
+        toast.error(err.message || "Something went wrong. Please try again.");
+      } else {
+        console.error("Unknown error:", err);
+        toast.error("Unexpected error. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,12 +58,19 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const data = await postEmail();
-      data.success
-        ? toast.success("Reset link sent again!")
-        : toast.error(data.message || "Failed to resend email");
-    } catch (err: any) {
-      console.error("Resend error:", err);
-      toast.error(err.message || "Something went wrong. Please try again.");
+      if (data.success) {
+        toast.success("Reset link sent again!");
+      } else {
+        toast.error(data.message || "Failed to resend email");
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Forgot password error:", err.message);
+        toast.error(err.message || "Something went wrong. Pleasr try again.");
+      } else {
+        console.error("Unknown error:", err);
+        toast.error("Unexpected error. Please try again");
+      }
     } finally {
       setLoading(false);
     }

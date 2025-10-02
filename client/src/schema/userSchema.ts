@@ -6,8 +6,9 @@ export const userSignupSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters."),
   contact: z
     .string()
-    .min(10, { message: "Contact number at least 10 digit" })
-    .max(10, "Contact number at most 10 digit"),
+    .min(10, { message: "Contact number must be at least 10 digits" })
+    .max(10, { message: "Contact number must be at most 10 digits" })
+    .regex(/^\d+$/, { message: "Contact number must contain only digits" }),
 });
 
 export type SignupInputState = z.infer<typeof userSignupSchema>;
