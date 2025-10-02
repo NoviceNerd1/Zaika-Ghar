@@ -29,6 +29,7 @@ app.use((req, res, next) => {
 });
 
 // --- CORS setup ---
+// --- CORS setup ---
 const allowedOrigins = [
   "http://localhost:5173", // Vite dev
   "https://zaika-ghar.vercel.app", // production frontend
@@ -37,19 +38,33 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // allow server-to-server / Postman requests
+      // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
+      if (!origin) return callback(null, true);
+
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS not allowed"));
+        console.log(`CORS blocked for origin: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, // allow cookies/auth headers
+    credentials: true, // Allow cookies/auth headers
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 
-// Preflight requests
-app.options("*", cors());
+// Enhanced preflight handling
+app.options("*", (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin!)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
 
 // --- Routes ---
 app.use("/api/v1/user", userRoute);

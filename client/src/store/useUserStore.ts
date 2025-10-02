@@ -4,13 +4,13 @@ import axios from "axios";
 import type { LoginInputState, SignupInputState } from "@/schema/userSchema";
 import { toast } from "sonner";
 
-axios.defaults.withCredentials = true;
 const API_END_POINT = `${import.meta.env.VITE_API_URL}/api/v1/user`;
+axios.defaults.withCredentials = true;
 
 type User = {
   fullname: string;
   email: string;
-  contact: string; // Changed to string to match form input
+  contact: string;
   address: string;
   city: string;
   country: string;
@@ -29,7 +29,6 @@ type SignupResult = {
 
 type UserState = {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
   loading: boolean;
@@ -41,29 +40,33 @@ type UserState = {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
   updateProfile: (input: UpdateProfileInput) => Promise<void>;
+  clearAuth: () => void; // New method to clear auth state
 };
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
-      token: null,
       isAuthenticated: false,
       isCheckingAuth: true,
       loading: false,
+
+      // Clear authentication state
+      clearAuth: () => {
+        set({
+          user: null,
+          isAuthenticated: false,
+          isCheckingAuth: false,
+        });
+      },
 
       signup: async (input: SignupInputState): Promise<SignupResult> => {
         try {
           set({ loading: true });
 
-          // Convert contact to number for API if needed, or keep as string
-          // const apiInput = {
-          //   ...input,
-          //   contact: parseInt(input.contact), // Convert to number for API
-          // };
-
           const response = await axios.post(`${API_END_POINT}/signup`, input, {
             headers: { "Content-Type": "application/json" },
+            withCredentials: true,
           });
 
           if (response.data.success) {
@@ -71,7 +74,6 @@ export const useUserStore = create<UserState>()(
             set({
               loading: false,
               user: response.data.user,
-              token: response.data.token,
               isAuthenticated: true,
             });
             return { success: true };
@@ -104,22 +106,19 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      // ... rest of your store methods remain the same
       login: async (input: LoginInputState) => {
         try {
           set({ loading: true });
           const response = await axios.post(`${API_END_POINT}/login`, input, {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             withCredentials: true,
           });
+
           if (response.data.success) {
             toast.success(response.data.message);
             set({
               loading: false,
               user: response.data.user,
-              token: response.data.token,
               isAuthenticated: true,
             });
           }
@@ -130,6 +129,7 @@ export const useUserStore = create<UserState>()(
             toast.error("An unexpected error occurred");
           }
           set({ loading: false });
+          throw error; // Re-throw to handle in component
         }
       },
 
@@ -140,9 +140,8 @@ export const useUserStore = create<UserState>()(
             `${API_END_POINT}/verify-email`,
             { verificationCode },
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
+              withCredentials: true,
             }
           );
           if (response.data.success) {
@@ -162,6 +161,7 @@ export const useUserStore = create<UserState>()(
             toast.error("An unexpected error occurred");
           }
           set({ loading: false });
+          throw error;
         }
       },
 
@@ -171,26 +171,34 @@ export const useUserStore = create<UserState>()(
           const response = await axios.get(`${API_END_POINT}/check-auth`, {
             withCredentials: true,
           });
+
           if (response.data.success) {
             set({
               user: response.data.user,
               isAuthenticated: true,
               isCheckingAuth: false,
             });
+          } else {
+            get().clearAuth();
           }
         } catch (error: unknown) {
-          console.error("Authentication failed", error);
-          set({ isAuthenticated: false, isCheckingAuth: false });
+          console.error("Authentication check failed:", error);
+          get().clearAuth();
         }
       },
 
       logout: async () => {
         try {
           set({ loading: true });
-          const response = await axios.post(`${API_END_POINT}/logout`);
+          const response = await axios.post(
+            `${API_END_POINT}/logout`,
+            {},
+            { withCredentials: true }
+          );
+
           if (response.data.success) {
             toast.success(response.data.message);
-            set({ loading: false, user: null, isAuthenticated: false });
+            get().clearAuth();
           }
         } catch (error: unknown) {
           if (axios.isAxiosError(error)) {
@@ -207,7 +215,8 @@ export const useUserStore = create<UserState>()(
           set({ loading: true });
           const response = await axios.post(
             `${API_END_POINT}/forgot-password`,
-            { email }
+            { email },
+            { withCredentials: true }
           );
           if (response.data.success) {
             toast.success(response.data.message);
@@ -230,7 +239,8 @@ export const useUserStore = create<UserState>()(
           set({ loading: true });
           const response = await axios.post(
             `${API_END_POINT}/reset-password/${token}`,
-            { newPassword }
+            { newPassword },
+            { withCredentials: true }
           );
           if (response.data.success) {
             toast.success(response.data.message);
@@ -254,9 +264,8 @@ export const useUserStore = create<UserState>()(
             `${API_END_POINT}/profile/update`,
             input,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
+              withCredentials: true,
             }
           );
           if (response.data.success) {
@@ -271,12 +280,17 @@ export const useUserStore = create<UserState>()(
           } else {
             toast.error("An unexpected error occurred");
           }
+          throw error;
         }
       },
     }),
     {
-      name: "user-name",
+      name: "user-store",
       storage: createJSONStorage(() => localStorage),
+      // Only persist user data, not auth state
+      partialize: (state) => ({
+        user: state.user,
+      }),
     }
   )
 );

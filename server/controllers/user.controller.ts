@@ -132,10 +132,20 @@ export const verifyEmail = async (req: Request, res: Response) => {
 };
 export const logout = async (_: Request, res: Response) => {
   try {
-    return res.clearCookie("token").status(200).json({
-      success: true,
-      message: "Logged out successfully.",
-    });
+    const isProduction = process.env.NODE_ENV === "production";
+
+    return res
+      .clearCookie("token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        domain: isProduction ? ".yourdomain.com" : undefined,
+      })
+      .status(200)
+      .json({
+        success: true,
+        message: "Logged out successfully.",
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal server error" });
