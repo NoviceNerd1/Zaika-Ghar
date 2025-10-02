@@ -112,6 +112,7 @@ export const useUserStore = create<UserState>()(
             headers: {
               "Content-Type": "application/json",
             },
+            withCredentials: true,
           });
           if (response.data.success) {
             toast.success(response.data.message);
