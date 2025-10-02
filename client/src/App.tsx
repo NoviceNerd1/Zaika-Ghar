@@ -1,168 +1,10 @@
-// import Login from "./auth/Login";
-// import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import Signup from "./auth/Signup";
-// import ForgotPassword from "./auth/ForgotPassword";
-// import ResetPassword from "./auth/ResetPassword";
-// import VerifyEmail from "./auth/VerifyEmail";
-// import HereSection from "./components/HereSection";
-// import MainLayout from "./layout/MainLayout";
-// import Profile from "./components/Profile";
-// import SearchPage from "./components/SearchPage";
-// import RestaurantDetail from "./components/RestaurantDetail";
-// import Cart from "./components/Cart";
-// import Restaurant from "./admin/Restaurant";
-// import AddMenu from "./admin/AddMenu";
-// import Orders from "./admin/Orders";
-// import Success from "./components/Success";
-// import { useUserStore } from "./store/useUserStore";
-// import { Navigate } from "react-router-dom";
-// import { useEffect } from "react";
-// import Loading from "./components/Loading";
-// import { useThemeStore } from "./store/useThemeStore";
-
-// const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
-//   const { isAuthenticated, user } = useUserStore();
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" replace />;
-//   }
-
-//   if (!user?.isVerified) {
-//     return <Navigate to="/verify-email" replace />;
-//   }
-//   return children;
-// };
-
-// const AuthenticatedUser = ({ children }: { children: React.ReactNode }) => {
-//   const { isAuthenticated, user } = useUserStore();
-//   if (isAuthenticated && user?.isVerified) {
-//     return <Navigate to="/" replace />;
-//   }
-//   return children;
-// };
-
-// const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-//   const { user, isAuthenticated } = useUserStore();
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" replace />;
-//   }
-//   if (!user?.admin) {
-//     return <Navigate to="/" replace />;
-//   }
-
-//   return children;
-// };
-
-// const appRouter = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: (
-//       <ProtectedRoutes>
-//         <MainLayout />
-//       </ProtectedRoutes>
-//     ),
-//     children: [
-//       {
-//         path: "/",
-//         element: <HereSection />,
-//       },
-//       {
-//         path: "/profile",
-//         element: <Profile />,
-//       },
-//       {
-//         path: "/search/:text",
-//         element: <SearchPage />,
-//       },
-//       {
-//         path: "/restaurant/:id",
-//         element: <RestaurantDetail />,
-//       },
-//       {
-//         path: "/cart",
-//         element: <Cart />,
-//       },
-//       {
-//         path: "/order/status",
-//         element: <Success />,
-//       },
-//       // admin services start from here
-//       {
-//         path: "/admin/restaurant",
-//         element: (
-//           <AdminRoute>
-//             <Restaurant />
-//           </AdminRoute>
-//         ),
-//       },
-//       {
-//         path: "/admin/menu",
-//         element: (
-//           <AdminRoute>
-//             <AddMenu />
-//           </AdminRoute>
-//         ),
-//       },
-//       {
-//         path: "/admin/orders",
-//         element: (
-//           <AdminRoute>
-//             <Orders />
-//           </AdminRoute>
-//         ),
-//       },
-//     ],
-//   },
-//   {
-//     path: "/login",
-//     element: (
-//       <AuthenticatedUser>
-//         <Login />
-//       </AuthenticatedUser>
-//     ),
-//   },
-//   {
-//     path: "/signup",
-//     element: (
-//       <AuthenticatedUser>
-//         <Signup />
-//       </AuthenticatedUser>
-//     ),
-//   },
-//   {
-//     path: "/forgot-password",
-//     element: <ForgotPassword />,
-//   },
-//   {
-//     path: "/reset-password/:token",
-//     element: <ResetPassword />,
-//   },
-//   {
-//     path: "/verify-email/",
-//     element: <VerifyEmail />,
-//   },
-// ]);
-
-// function App() {
-//   const initializeTheme = useThemeStore((state: any) => state.initializeTheme);
-//   const { checkAuthentication, isCheckingAuth } = useUserStore();
-//   // checking auth every time when page is loaded
-//   useEffect(() => {
-//     checkAuthentication();
-//     initializeTheme();
-//   }, [checkAuthentication, initializeTheme]);
-
-//   if (isCheckingAuth) return <Loading />;
-//   return (
-//     <main>
-//       <RouterProvider router={appRouter}></RouterProvider>
-//     </main>
-//   );
-// }
-
-// export default App;
-
 import Login from "./auth/Login";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import Signup from "./auth/Signup";
 import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
@@ -178,168 +20,108 @@ import AddMenu from "./admin/AddMenu";
 import Orders from "./admin/Orders";
 import Success from "./components/Success";
 import { useUserStore } from "./store/useUserStore";
-import { Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import Loading from "./components/Loading";
 import { useThemeStore } from "./store/useThemeStore";
 
+// Enhanced ProtectedRoutes with redirect back after login
 const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user } = useUserStore();
+  const { isAuthenticated, user, isCheckingAuth } = useUserStore();
+  const location = useLocation();
+
+  // Show loading while checking auth to prevent flash
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Redirect to login with return url
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (!user?.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
-  return children;
+
+  return <>{children}</>;
 };
 
+// Enhanced AuthenticatedUser for auth pages
 const AuthenticatedUser = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user } = useUserStore();
-  if (isAuthenticated && user?.isVerified) {
-    return <Navigate to="/" replace />;
+  const { isAuthenticated, user, isCheckingAuth } = useUserStore();
+  const location = useLocation();
+
+  // Show loading while checking auth
+  if (isCheckingAuth) {
+    return <Loading />;
   }
-  return children;
+
+  // If authenticated and verified, redirect to intended page or home
+  if (isAuthenticated && user?.isVerified) {
+    const from = location.state?.from?.pathname || "/";
+    return <Navigate to={from} replace />;
+  }
+
+  // If authenticated but not verified, allow access to verify-email page
+  if (
+    isAuthenticated &&
+    !user?.isVerified &&
+    location.pathname !== "/verify-email"
+  ) {
+    return <Navigate to="/verify-email" replace />;
+  }
+
+  return <>{children}</>;
 };
 
+// Enhanced AdminRoute
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isAuthenticated } = useUserStore();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  const { user, isAuthenticated, isCheckingAuth } = useUserStore();
+  const location = useLocation();
+
+  if (isCheckingAuth) {
+    return <Loading />;
   }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
   if (!user?.admin) {
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
-// const appRouter = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: (
-//       <ProtectedRoutes>
-//         <MainLayout />
-//       </ProtectedRoutes>
-//     ),
-//     children: [
-//       {
-//         path: "/",
-//         element: <HereSection />,
-//       },
-//       {
-//         path: "/profile",
-//         element: <Profile />,
-//       },
-//       // Search routes - specific first, then parameterized
-//       {
-//         path: "/search",
-//         element: <SearchPage />, // Shows all restaurants by default
-//       },
-//       {
-//         path: "/search/:text",
-//         element: <SearchPage />, // Shows search results
-//       },
-//       {
-//         path: "/restaurant/:id",
-//         element: <RestaurantDetail />,
-//       },
-//       {
-//         path: "/cart",
-//         element: <Cart />,
-//       },
-//       {
-//         path: "/order/status",
-//         element: <Success />,
-//       },
-//       // admin services start from here
-//       {
-//         path: "/admin/restaurant",
-//         element: (
-//           <AdminRoute>
-//             <Restaurant />
-//           </AdminRoute>
-//         ),
-//       },
-//       {
-//         path: "/admin/menu",
-//         element: (
-//           <AdminRoute>
-//             <AddMenu />
-//           </AdminRoute>
-//         ),
-//       },
-//       {
-//         path: "/admin/orders",
-//         element: (
-//           <AdminRoute>
-//             <Orders />
-//           </AdminRoute>
-//         ),
-//       },
-//     ],
-//   },
-//   {
-//     path: "/login",
-//     element: (
-//       <AuthenticatedUser>
-//         <Login />
-//       </AuthenticatedUser>
-//     ),
-//   },
-//   {
-//     path: "/signup",
-//     element: (
-//       <AuthenticatedUser>
-//         <Signup />
-//       </AuthenticatedUser>
-//     ),
-//   },
-//   {
-//     path: "/forgot-password",
-//     element: <ForgotPassword />,
-//   },
-//   {
-//     path: "/reset-password/:token",
-//     element: <ResetPassword />,
-//   },
-//   {
-//     path: "/verify-email/",
-//     element: <VerifyEmail />,
-//   },
-// ]);
-
+// Optimized router configuration
 const appRouter = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />, // MainLayout stays public
+    element: <MainLayout />,
     children: [
       // Public routes
       {
-        path: "/",
+        index: true,
         element: <HereSection />,
       },
       {
-        path: "/search",
+        path: "search/:text", // More specific first
         element: <SearchPage />,
       },
       {
-        path: "/search/:text",
+        path: "search",
         element: <SearchPage />,
       },
       {
-        path: "/restaurant/:id",
-        element: <RestaurantDetail />, // restaurant details page
+        path: "restaurant/:id",
+        element: <RestaurantDetail />,
       },
-      {
-        path: "/restaurant/:id/menu",
-        element: <RestaurantDetail />, // (if you have separate menu route)
-      },
+      // Remove duplicate /restaurant/:id/menu unless you need it
 
-      // Protected (require login)
+      // Protected routes (require login + verification)
       {
-        path: "/profile",
+        path: "profile",
         element: (
           <ProtectedRoutes>
             <Profile />
@@ -347,7 +129,7 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/cart",
+        path: "cart",
         element: (
           <ProtectedRoutes>
             <Cart />
@@ -355,7 +137,7 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/order/status",
+        path: "order/status",
         element: (
           <ProtectedRoutes>
             <Success />
@@ -363,9 +145,9 @@ const appRouter = createBrowserRouter([
         ),
       },
 
-      // Admin
+      // Admin routes (require login + verification + admin role)
       {
-        path: "/admin/restaurant",
+        path: "admin/restaurant",
         element: (
           <AdminRoute>
             <Restaurant />
@@ -373,7 +155,7 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/menu",
+        path: "admin/menu",
         element: (
           <AdminRoute>
             <AddMenu />
@@ -381,17 +163,23 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/orders",
+        path: "admin/orders",
         element: (
           <AdminRoute>
             <Orders />
           </AdminRoute>
         ),
       },
+
+      // 404 catch-all - keep at bottom
+      {
+        path: "*",
+        element: <Navigate to="/" replace />,
+      },
     ],
   },
 
-  // Auth pages
+  // Auth pages (redirect if already authenticated)
   {
     path: "/login",
     element: (
@@ -409,6 +197,14 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
+    path: "/verify-email",
+    element: (
+      <AuthenticatedUser>
+        <VerifyEmail />
+      </AuthenticatedUser>
+    ),
+  },
+  {
     path: "/forgot-password",
     element: <ForgotPassword />,
   },
@@ -416,25 +212,33 @@ const appRouter = createBrowserRouter([
     path: "/reset-password/:token",
     element: <ResetPassword />,
   },
-  {
-    path: "/verify-email/",
-    element: <VerifyEmail />,
-  },
 ]);
 
 function App() {
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const { checkAuthentication, isCheckingAuth } = useUserStore();
-  // checking auth every time when page is loaded
+
+  // Initialize app on mount
   useEffect(() => {
-    checkAuthentication();
-    initializeTheme();
+    const initializeApp = async () => {
+      await Promise.all([checkAuthentication(), initializeTheme()]);
+    };
+
+    initializeApp();
   }, [checkAuthentication, initializeTheme]);
 
-  if (isCheckingAuth) return <Loading />;
+  // Global loading state
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
-    <main>
-      <RouterProvider router={appRouter}></RouterProvider>
+    <main className="min-h-screen">
+      <RouterProvider router={appRouter} />
     </main>
   );
 }

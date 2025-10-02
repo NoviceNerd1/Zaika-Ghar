@@ -167,7 +167,9 @@ export const useUserStore = create<UserState>()(
       checkAuthentication: async () => {
         try {
           set({ isCheckingAuth: true });
-          const response = await axios.get(`${API_END_POINT}/check-auth`);
+          const response = await axios.get(`${API_END_POINT}/check-auth`, {
+            withCredentials: true,
+          });
           if (response.data.success) {
             set({
               user: response.data.user,

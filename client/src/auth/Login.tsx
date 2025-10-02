@@ -5,7 +5,7 @@ import { type LoginInputState, userLoginSchema } from "@/schema/userSchema";
 import { useUserStore } from "@/store/useUserStore";
 import { Loader2, LockKeyhole, Mail } from "lucide-react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 // Move InputField component outside of Login to prevent re-renders
 const InputField = ({
@@ -49,6 +49,7 @@ const Login = () => {
   const [errors, setErrors] = useState<Partial<LoginInputState>>({});
   const { loading, login } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,7 +74,10 @@ const Login = () => {
     // API call
     try {
       await login(input);
-      navigate("/");
+
+      // Redirect to intended page or home
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
     }
