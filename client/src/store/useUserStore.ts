@@ -4,7 +4,7 @@ import axios from "axios";
 import type { LoginInputState, SignupInputState } from "@/schema/userSchema";
 import { toast } from "sonner";
 
-const API_END_POINT = "http://localhost:3000/api/v1/user";
+const API_END_POINT = `${import.meta.env.VITE_API_URL}/api/v1/user`;
 axios.defaults.withCredentials = true;
 
 type User = {
