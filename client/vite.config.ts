@@ -13,6 +13,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  base: "/",
   server: {
     proxy: {
       "/api": "http://localhost:5000",
