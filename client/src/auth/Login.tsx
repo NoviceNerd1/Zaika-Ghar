@@ -3,11 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { type LoginInputState, userLoginSchema } from "@/schema/userSchema";
 import { useUserStore } from "@/store/useUserStore";
-import { Loader2, LockKeyhole, Mail } from "lucide-react";
+import { Loader2, LockKeyhole, Mail, Sparkles, ChefHat } from "lucide-react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-// Move InputField component outside of Login to prevent re-renders
+// Enhanced InputField component with professional styling
 const InputField = ({
   name,
   type,
@@ -25,19 +25,26 @@ const InputField = ({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   error?: string;
 }) => (
-  <div className="mb-4">
-    <div className="relative">
-      <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 size-4" />
+  <div className="mb-6">
+    <div className="relative group">
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 group-focus-within:scale-110">
+        <Icon className="text-muted-foreground/70 group-focus-within:text-primary size-4 transition-colors duration-300" />
+      </div>
       <Input
         type={type}
         placeholder={placeholder}
         name={name}
         value={value}
         onChange={onChange}
-        className="pl-10 focus-visible:ring-2 focus-visible:ring-orange/20 transition-all duration-200"
+        className="pl-12 pr-4 h-12 bg-background/50 backdrop-blur-sm border-2 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 rounded-xl"
       />
     </div>
-    {error && <span className="text-xs text-red-500 mt-1 block">{error}</span>}
+    {error && (
+      <span className="text-xs text-destructive font-medium mt-2 flex items-center gap-1 animate-pulse">
+        <Sparkles className="size-3" />
+        {error}
+      </span>
+    )}
   </div>
 );
 
@@ -84,28 +91,42 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-orange-50/20 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
+          className="bg-card/80 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-border/50"
         >
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="font-bold text-3xl text-gray-800 mb-2">
+          {/* Enhanced Header */}
+          <div className="text-center mb-10">
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/60 rounded-full blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
+                <div className="p-3 bg-gradient-to-br from-primary to-primary/80 rounded-2xl shadow-lg relative">
+                  <ChefHat className="size-6 text-primary-foreground" />
+                </div>
+              </div>
+            </div>
+            <h1 className="font-bold text-4xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-3">
               Zaika Ghar
             </h1>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-lg">
               Welcome back! Sign in to your account
             </p>
           </div>
 
           {/* Form Fields */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <InputField
               name="email"
               type="email"
-              placeholder="Email"
+              placeholder="Enter your email address"
               icon={Mail}
               value={input.email}
               onChange={handleInputChange}
@@ -114,7 +135,7 @@ const Login = () => {
             <InputField
               name="password"
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               icon={LockKeyhole}
               value={input.password}
               onChange={handleInputChange}
@@ -123,49 +144,62 @@ const Login = () => {
           </div>
 
           {/* Forgot Password Link */}
-          <div className="flex justify-end mb-6">
+          <div className="flex justify-end mb-8">
             <Link
               to="/forgot-password"
-              className="text-sm text-orange hover:text-hoverOrange transition-colors duration-200 hover:underline"
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-all duration-300 hover:underline hover:underline-offset-4"
             >
               Forgot your password?
             </Link>
           </div>
 
           {/* Submit Button */}
-          <div className="mb-6">
+          <div className="mb-8">
             {loading ? (
               <Button
                 disabled
-                className="w-full bg-orange hover:bg-hoverOrange h-11 rounded-lg transition-all duration-200"
+                className="w-full bg-gradient-to-r from-primary to-primary/90 h-12 rounded-xl shadow-lg transition-all duration-300"
               >
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="mr-3 size-4 animate-spin" />
                 Signing in...
               </Button>
             ) : (
               <Button
                 type="submit"
-                className="text-black-400 w-full bg-orange hover:bg-hoverOrange h-11 rounded-lg font-medium transition-all duration-200 hover:shadow-lg"
+                className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary h-12 rounded-xl font-semibold text-primary-foreground shadow-2xl hover:shadow-primary/25 transform hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden"
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 Log In
               </Button>
             )}
           </div>
 
-          {/* Separator */}
-          <div className="space-y-4">
-            <Separator className="bg-gray-200" />
-            <p className="text-center text-gray-600 text-sm">
+          {/* Enhanced Separator and Sign Up Link */}
+          <div className="space-y-6">
+            <div className="relative">
+              <Separator className="bg-border/50" />
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-sm text-muted-foreground">
+                or
+              </div>
+            </div>
+            <p className="text-center text-muted-foreground text-base">
               Don't have an account?{" "}
               <Link
                 to="/signup"
-                className="text-orange hover:text-hoverOrange font-medium transition-colors duration-200"
+                className="font-semibold text-primary hover:text-primary/80 transition-all duration-300 hover:underline hover:underline-offset-4"
               >
                 Create account
               </Link>
             </p>
           </div>
         </form>
+
+        {/* Footer Note */}
+        <div className="text-center mt-8">
+          <p className="text-sm text-muted-foreground/70">
+            Secure login with industry-standard encryption
+          </p>
+        </div>
       </div>
     </div>
   );
