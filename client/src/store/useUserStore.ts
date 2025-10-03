@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import axios from "axios";
 import type { LoginInputState, SignupInputState } from "@/schema/userSchema";
 import { toast } from "sonner";
@@ -40,257 +39,273 @@ type UserState = {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
   updateProfile: (input: UpdateProfileInput) => Promise<void>;
-  clearAuth: () => void; // New method to clear auth state
+  clearAuth: () => void;
 };
 
-export const useUserStore = create<UserState>()(
-  persist(
-    (set, get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  isCheckingAuth: true,
+  loading: false,
+
+  // Clear authentication state
+  clearAuth: () => {
+    if (import.meta.env.DEV) console.log("🔄 Clearing auth state");
+    set({
       user: null,
       isAuthenticated: false,
-      isCheckingAuth: true,
+      isCheckingAuth: false,
       loading: false,
+    });
+  },
 
-      // Clear authentication state
-      clearAuth: () => {
+  signup: async (input: SignupInputState): Promise<SignupResult> => {
+    try {
+      set({ loading: true });
+      if (import.meta.env.DEV) console.log("📝 Starting signup process");
+
+      const response = await axios.post(`${API_END_POINT}/signup`, input);
+
+      if (import.meta.env.DEV)
+        console.log("✅ Signup response:", response.data);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
         set({
-          user: null,
-          isAuthenticated: false,
+          loading: false,
+          user: response.data.user,
+          isAuthenticated: true,
+        });
+        return { success: true, error: undefined, shouldRedirect: false };
+      } else {
+        const errorMessage = response.data.message || "Signup failed";
+        toast.error(errorMessage);
+        set({ loading: false });
+        return {
+          success: false,
+          error: errorMessage,
+          shouldRedirect: false,
+        };
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error("❌ Signup error:", error);
+      let errorMessage = "An unexpected error occurred";
+      let shouldRedirect = false;
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || "Signup failed";
+        if (errorMessage.toLowerCase().includes("already exist")) {
+          shouldRedirect = true;
+        }
+        toast.error(errorMessage);
+      } else {
+        toast.error(errorMessage);
+      }
+
+      set({ loading: false });
+      return { success: false, error: errorMessage, shouldRedirect };
+    }
+  },
+
+  login: async (input: LoginInputState) => {
+    try {
+      set({ loading: true });
+      if (import.meta.env.DEV) console.log("🔐 Starting login process");
+
+      const response = await axios.post(`${API_END_POINT}/login`, input);
+
+      if (import.meta.env.DEV) console.log("✅ Login response:", response.data);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        set({
+          loading: false,
+          user: response.data.user,
+          isAuthenticated: true,
+        });
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error("❌ Login error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Login failed");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      set({ loading: false });
+      throw error;
+    }
+  },
+
+  verifyEmail: async (verificationCode: string) => {
+    try {
+      set({ loading: true });
+      if (import.meta.env.DEV) console.log("📧 Verifying email");
+
+      const response = await axios.post(`${API_END_POINT}/verify-email`, {
+        verificationCode,
+      });
+
+      if (import.meta.env.DEV)
+        console.log("✅ Email verification response:", response.data);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        set({
+          loading: false,
+          user: response.data.user,
+          isAuthenticated: true,
+        });
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV)
+        console.error("❌ Email verification error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Email verification failed"
+        );
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      set({ loading: false });
+      throw error;
+    }
+  },
+
+  checkAuthentication: async () => {
+    try {
+      if (import.meta.env.DEV) console.log("🔄 Starting authentication check");
+      set({ isCheckingAuth: true });
+
+      const response = await axios.get(`${API_END_POINT}/check-auth`);
+
+      if (import.meta.env.DEV)
+        console.log("✅ Auth check response:", response.data);
+
+      if (response.data.success && response.data.user) {
+        set({
+          user: response.data.user,
+          isAuthenticated: true,
           isCheckingAuth: false,
         });
-      },
-
-      signup: async (input: SignupInputState): Promise<SignupResult> => {
-        try {
-          set({ loading: true });
-
-          const response = await axios.post(`${API_END_POINT}/signup`, input, {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          });
-
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({
-              loading: false,
-              user: response.data.user,
-              isAuthenticated: true,
-            });
-            return { success: true };
-          } else {
-            const errorMessage = response.data.message || "Signup failed";
-            toast.error(errorMessage);
-            set({ loading: false });
-            return {
-              success: false,
-              error: errorMessage,
-              shouldRedirect: false,
-            };
-          }
-        } catch (error: unknown) {
-          let errorMessage = "An unexpected error occurred";
-          let shouldRedirect = false;
-
-          if (axios.isAxiosError(error)) {
-            errorMessage = error.response?.data?.message || "Signup failed";
-            if (errorMessage.toLowerCase().includes("already exist")) {
-              shouldRedirect = true;
-            }
-            toast.error(errorMessage);
-          } else {
-            toast.error(errorMessage);
-          }
-
-          set({ loading: false });
-          return { success: false, error: errorMessage, shouldRedirect };
-        }
-      },
-
-      login: async (input: LoginInputState) => {
-        try {
-          set({ loading: true });
-          const response = await axios.post(`${API_END_POINT}/login`, input, {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          });
-
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({
-              loading: false,
-              user: response.data.user,
-              isAuthenticated: true,
-            });
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(error.response?.data?.message || "Login failed");
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          set({ loading: false });
-          throw error; // Re-throw to handle in component
-        }
-      },
-
-      verifyEmail: async (verificationCode: string) => {
-        try {
-          set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/verify-email`,
-            { verificationCode },
-            {
-              headers: { "Content-Type": "application/json" },
-              withCredentials: true,
-            }
-          );
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({
-              loading: false,
-              user: response.data.user,
-              isAuthenticated: true,
-            });
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(
-              error.response?.data?.message || "Email verification failed"
-            );
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          set({ loading: false });
-          throw error;
-        }
-      },
-
-      checkAuthentication: async () => {
-        try {
-          set({ isCheckingAuth: true });
-          const response = await axios.get(`${API_END_POINT}/check-auth`, {
-            withCredentials: true,
-          });
-
-          if (response.data.success) {
-            set({
-              user: response.data.user,
-              isAuthenticated: true,
-              isCheckingAuth: false,
-            });
-          } else {
-            get().clearAuth();
-          }
-        } catch (error: unknown) {
-          console.error("Authentication check failed:", error);
-          get().clearAuth();
-        }
-      },
-
-      logout: async () => {
-        try {
-          set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/logout`,
-            {},
-            { withCredentials: true }
-          );
-
-          if (response.data.success) {
-            toast.success(response.data.message);
-            get().clearAuth();
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(error.response?.data?.message || "Logout failed");
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          set({ loading: false });
-        }
-      },
-
-      forgotPassword: async (email: string) => {
-        try {
-          set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/forgot-password`,
-            { email },
-            { withCredentials: true }
-          );
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({ loading: false });
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(
-              error.response?.data?.message || "Password reset request failed"
-            );
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          set({ loading: false });
-        }
-      },
-
-      resetPassword: async (token: string, newPassword: string) => {
-        try {
-          set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/reset-password/${token}`,
-            { newPassword },
-            { withCredentials: true }
-          );
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({ loading: false });
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(
-              error.response?.data?.message || "Password reset failed"
-            );
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          set({ loading: false });
-        }
-      },
-
-      updateProfile: async (input: UpdateProfileInput) => {
-        try {
-          const response = await axios.put(
-            `${API_END_POINT}/profile/update`,
-            input,
-            {
-              headers: { "Content-Type": "application/json" },
-              withCredentials: true,
-            }
-          );
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set({ user: response.data.user, isAuthenticated: true });
-          }
-        } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            toast.error(
-              error.response?.data?.message || "Profile update failed"
-            );
-          } else {
-            toast.error("An unexpected error occurred");
-          }
-          throw error;
-        }
-      },
-    }),
-    {
-      name: "user-store",
-      storage: createJSONStorage(() => localStorage),
-      // Only persist user data, not auth state
-      partialize: (state) => ({
-        user: state.user,
-      }),
+        if (import.meta.env.DEV) console.log("🔐 Authentication successful");
+      } else {
+        if (import.meta.env.DEV)
+          console.log("❌ Auth check failed - no user data");
+        get().clearAuth();
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV)
+        console.error("💥 Auth check error:", {
+          message: axios.isAxiosError(error)
+            ? error.response?.data?.message
+            : error,
+          status: axios.isAxiosError(error)
+            ? error.response?.status
+            : "Unknown",
+        });
+      get().clearAuth();
     }
-  )
-);
+  },
+
+  logout: async () => {
+    try {
+      set({ loading: true });
+      if (import.meta.env.DEV) console.log("🚪 Starting logout process");
+
+      const response = await axios.post(`${API_END_POINT}/logout`);
+
+      if (import.meta.env.DEV)
+        console.log("✅ Logout response:", response.data);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        get().clearAuth();
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error("❌ Logout error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Logout failed");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      // Clear auth state even if logout request fails
+      get().clearAuth();
+    }
+  },
+
+  forgotPassword: async (email: string) => {
+    try {
+      set({ loading: true });
+      const response = await axios.post(`${API_END_POINT}/forgot-password`, {
+        email,
+      });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        set({ loading: false });
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV)
+        console.error("❌ Forgot password error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Password reset request failed"
+        );
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      set({ loading: false });
+    }
+  },
+
+  resetPassword: async (token: string, newPassword: string) => {
+    try {
+      set({ loading: true });
+      const response = await axios.post(
+        `${API_END_POINT}/reset-password/${token}`,
+        { newPassword }
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+        set({ loading: false });
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error("❌ Reset password error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Password reset failed");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      set({ loading: false });
+    }
+  },
+
+  updateProfile: async (input: UpdateProfileInput) => {
+    try {
+      if (import.meta.env.DEV) console.log("📝 Starting profile update");
+      const response = await axios.put(
+        `${API_END_POINT}/profile/update`,
+        input
+      );
+
+      if (import.meta.env.DEV)
+        console.log("✅ Profile update response:", response.data);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        // Re-fetch user data to ensure consistency
+        const authResponse = await axios.get(`${API_END_POINT}/check-auth`);
+        if (authResponse.data.success) {
+          set({ user: authResponse.data.user, isAuthenticated: true });
+        }
+      }
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error("❌ Profile update error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Profile update failed");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      throw error;
+    }
+  },
+}));
