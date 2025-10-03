@@ -70,28 +70,24 @@ export const useRestaurantStore = create<RestaurantState>()(
       },
 
       getRestaurant: async () => {
+        set({ loading: true });
         try {
-          set({ loading: true });
           const response = await axios.get(`${API_END_POINT}/`);
           if (response.data.success) {
             set({
-              loading: false,
               restaurant: {
                 ...response.data.restaurant,
-                // Ensure all visual properties exist
                 rating: response.data.restaurant.rating || 4.0,
                 location:
                   response.data.restaurant.location ||
                   `${response.data.restaurant.city}, ${response.data.restaurant.country}`,
                 cost: response.data.restaurant.cost || 500,
               },
+              loading: false,
             });
           }
-        } catch (error: unknown) {
-          if (error instanceof AxiosError && error.response?.status === 404) {
-            set({ restaurant: null });
-          }
-          set({ loading: false });
+        } catch (err: unknown) {
+          set({ restaurant: null, loading: false });
         }
       },
 
