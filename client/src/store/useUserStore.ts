@@ -210,26 +210,24 @@ export const useUserStore = create<UserState>((set, get) => ({
   logout: async () => {
     try {
       set({ loading: true });
-      if (import.meta.env.DEV) console.log("🚪 Starting logout process");
 
-      const response = await axios.post(`${API_END_POINT}/logout`);
+      await axios.post(`${API_END_POINT}/logout`); // ensure backend clears cookie
 
-      if (import.meta.env.DEV)
-        console.log("✅ Logout response:", response.data);
-
-      if (response.data.success) {
-        toast.success(response.data.message);
-        get().clearAuth();
-      }
-    } catch (error: unknown) {
-      if (import.meta.env.DEV) console.error("❌ Logout error:", error);
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Logout failed");
-      } else {
-        toast.error("An unexpected error occurred");
-      }
-      // Clear auth state even if logout request fails
+      // Clear frontend state
       get().clearAuth();
+
+      // Optional: clear all persisted states (restaurant, etc.)
+      localStorage.removeItem("restaurant-store");
+      localStorage.removeItem("menu-store"); // if any other store
+
+      toast.success("Logged out successfully");
+    } catch (error) {
+      // Always clear state even if logout request fails
+      get().clearAuth();
+      localStorage.removeItem("restaurant-store");
+      toast.error("Logout failed, cleared local state anyway");
+    } finally {
+      set({ loading: false });
     }
   },
 

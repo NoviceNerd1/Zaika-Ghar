@@ -133,13 +133,12 @@ export const verifyEmail = async (req: Request, res: Response) => {
 export const logout = async (_: Request, res: Response) => {
   try {
     const isProduction = process.env.NODE_ENV === "production";
-
     return res
       .clearCookie("token", {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
-        domain: isProduction ? ".yourdomain.com" : undefined,
+        // DO NOT set domain
       })
       .status(200)
       .json({
