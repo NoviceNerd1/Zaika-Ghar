@@ -239,6 +239,8 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       // 🔑 COMPREHENSIVE storage cleanup
       const storesToClear = [
+        "user-name",
+        "user-store",
         "restaurant-store",
         "menu-store",
         "cart-store",

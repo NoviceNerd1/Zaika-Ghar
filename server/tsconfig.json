@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "target": "ESNext",
     "lib": ["ESNext"],
-    "types": ["node"], // enable Node globals/types
+    "types": ["node", "express"], // enable Node globals/types
     "esModuleInterop": true, // smoother default-import interop
     "allowSyntheticDefaultImports": true,
 
