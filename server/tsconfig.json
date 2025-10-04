@@ -6,8 +6,8 @@
     "outDir": "./dist", // compiled output
 
     /* === Module/Environment === */
-    "module": "NodeNext", // correct casing is important
-    "moduleResolution": "NodeNext",
+    "module": "ESNext", // correct casing is important
+    "moduleResolution": "node",
     "target": "ESNext",
     "lib": ["ESNext"],
     "types": ["node"], // enable Node globals/types

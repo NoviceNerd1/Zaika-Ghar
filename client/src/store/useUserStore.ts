@@ -31,6 +31,7 @@ type UserState = {
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
   loading: boolean;
+  justLoggedOut: boolean; // 🔑 NEW: Prevent auto-reauth after logout
   signup: (input: SignupInputState) => Promise<SignupResult>;
   login: (input: LoginInputState) => Promise<void>;
   verifyEmail: (verificationCode: string) => Promise<void>;
@@ -40,6 +41,7 @@ type UserState = {
   resetPassword: (token: string, newPassword: string) => Promise<void>;
   updateProfile: (input: UpdateProfileInput) => Promise<void>;
   clearAuth: () => void;
+  resetLogoutFlag: () => void; // 🔑 NEW: Reset the logout flag
 };
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -47,6 +49,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   isAuthenticated: false,
   isCheckingAuth: true,
   loading: false,
+  justLoggedOut: false, // 🔑 NEW: Track recent logout
 
   // Clear authentication state
   clearAuth: () => {
@@ -59,9 +62,14 @@ export const useUserStore = create<UserState>((set, get) => ({
     });
   },
 
+  // 🔑 NEW: Reset logout flag (useful for manual control)
+  resetLogoutFlag: () => {
+    set({ justLoggedOut: false });
+  },
+
   signup: async (input: SignupInputState): Promise<SignupResult> => {
     try {
-      set({ loading: true });
+      set({ loading: true, justLoggedOut: false }); // Reset logout flag on new auth
       if (import.meta.env.DEV) console.log("📝 Starting signup process");
 
       const response = await axios.post(`${API_END_POINT}/signup`, input);
@@ -75,6 +83,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           loading: false,
           user: response.data.user,
           isAuthenticated: true,
+          justLoggedOut: false, // Ensure flag is reset
         });
         return { success: true, error: undefined, shouldRedirect: false };
       } else {
@@ -109,7 +118,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   login: async (input: LoginInputState) => {
     try {
-      set({ loading: true });
+      set({ loading: true, justLoggedOut: false }); // Reset logout flag
       if (import.meta.env.DEV) console.log("🔐 Starting login process");
 
       const response = await axios.post(`${API_END_POINT}/login`, input);
@@ -122,6 +131,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           loading: false,
           user: response.data.user,
           isAuthenticated: true,
+          justLoggedOut: false, // Ensure flag is reset
         });
       }
     } catch (error: unknown) {
@@ -138,7 +148,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   verifyEmail: async (verificationCode: string) => {
     try {
-      set({ loading: true });
+      set({ loading: true, justLoggedOut: false }); // Reset logout flag
       if (import.meta.env.DEV) console.log("📧 Verifying email");
 
       const response = await axios.post(`${API_END_POINT}/verify-email`, {
@@ -154,6 +164,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           loading: false,
           user: response.data.user,
           isAuthenticated: true,
+          justLoggedOut: false, // Ensure flag is reset
         });
       }
     } catch (error: unknown) {
@@ -172,6 +183,14 @@ export const useUserStore = create<UserState>((set, get) => ({
   },
 
   checkAuthentication: async () => {
+    // 🔑 CRITICAL: Skip auth check if we just logged out
+    if (get().justLoggedOut) {
+      if (import.meta.env.DEV)
+        console.log("🔒 Skipping auth check - recently logged out");
+      set({ isCheckingAuth: false });
+      return;
+    }
+
     try {
       if (import.meta.env.DEV) console.log("🔄 Starting authentication check");
       set({ isCheckingAuth: true });
@@ -186,6 +205,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           user: response.data.user,
           isAuthenticated: true,
           isCheckingAuth: false,
+          justLoggedOut: false, // Reset flag on successful auth
         });
         if (import.meta.env.DEV) console.log("🔐 Authentication successful");
       } else {
@@ -209,23 +229,44 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   logout: async () => {
     try {
-      set({ loading: true });
+      set({ loading: true, justLoggedOut: true }); // 🔑 SET FLAG IMMEDIATELY
+      if (import.meta.env.DEV) console.log("🚪 Starting logout process");
 
-      await axios.post(`${API_END_POINT}/logout`); // ensure backend clears cookie
+      await axios.post(`${API_END_POINT}/logout`);
 
       // Clear frontend state
       get().clearAuth();
 
-      // Optional: clear all persisted states (restaurant, etc.)
-      localStorage.removeItem("restaurant-store");
-      localStorage.removeItem("menu-store"); // if any other store
+      // 🔑 COMPREHENSIVE storage cleanup
+      const storesToClear = [
+        "restaurant-store",
+        "menu-store",
+        "cart-store",
+        "theme-store",
+        "order-store",
+        "user-storage", // Common persist name
+      ];
 
+      storesToClear.forEach((store) => {
+        if (localStorage.getItem(store)) {
+          localStorage.removeItem(store);
+          if (import.meta.env.DEV) console.log(`🗑️ Cleared ${store}`);
+        }
+      });
+
+      if (import.meta.env.DEV) console.log("✅ Logout completed successfully");
       toast.success("Logged out successfully");
     } catch (error) {
-      // Always clear state even if logout request fails
+      console.error("❌ Logout error:", error);
+
+      // 🔑 STILL clear everything even if request fails
       get().clearAuth();
-      localStorage.removeItem("restaurant-store");
-      toast.error("Logout failed, cleared local state anyway");
+      set({ justLoggedOut: true }); // Ensure flag is set
+      localStorage.clear();
+
+      if (import.meta.env.DEV)
+        console.log("⚠️ Logout failed, but cleared local state");
+      toast.error("Logged out locally - server connection failed");
     } finally {
       set({ loading: false });
     }

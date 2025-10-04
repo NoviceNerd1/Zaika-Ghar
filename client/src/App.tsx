@@ -182,23 +182,61 @@ const appRouter = createBrowserRouter([
 
 function App() {
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
-  const { checkAuthentication, isCheckingAuth } = useUserStore();
+  const {
+    checkAuthentication,
+    isCheckingAuth,
+    resetLogoutFlag,
+    justLoggedOut,
+  } = useUserStore();
   const [initError, setInitError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  // Initialize app on mount - with proper error handling
+  // 🔧 SAFETY NET: Reset logout flag on app start to prevent stuck state
+  useEffect(() => {
+    const setupLogoutSafetyNet = () => {
+      // If we have a logout flag set, reset it after a timeout
+      // This prevents the app from being permanently "logged out" after abnormal shutdowns
+      if (justLoggedOut) {
+        const safetyTimeout = setTimeout(() => {
+          if (import.meta.env.DEV) {
+            console.log("🛡️ Safety net: Resetting logout flag");
+          }
+          resetLogoutFlag();
+        }, 10000); // Reset after 10 seconds as safety net
+
+        return () => clearTimeout(safetyTimeout);
+      }
+    };
+
+    setupLogoutSafetyNet();
+  }, [justLoggedOut, resetLogoutFlag]);
+
+  // 🚀 Initialize app on mount - with enhanced error handling
   useEffect(() => {
     const initializeApp = async () => {
+      // Prevent multiple initializations
+      if (initialized) return;
+
       try {
         setInitError(null);
 
-        // Initialize theme first (non-blocking)
+        if (import.meta.env.DEV) {
+          console.log("🎬 Starting app initialization...", {
+            justLoggedOut,
+            isCheckingAuth,
+          });
+        }
+
+        // Initialize theme first (non-blocking, visual feedback)
         initializeTheme();
 
-        // Then check authentication - essential for cookie-only approach
+        // 🔑 CRITICAL: Check authentication (respects justLoggedOut flag)
         await checkAuthentication();
 
+        setInitialized(true);
+
         if (import.meta.env.DEV) {
-          console.log("🚀 App initialization complete");
+          console.log("✅ App initialization complete");
         }
       } catch (error) {
         console.error("❌ App initialization failed:", error);
@@ -207,13 +245,29 @@ function App() {
             ? error.message
             : "Failed to initialize application"
         );
+        setInitialized(true); // Mark as initialized even on error
       }
     };
 
     initializeApp();
-  }, [checkAuthentication, initializeTheme]);
+  }, [checkAuthentication, initializeTheme, initialized, justLoggedOut]);
 
-  // Show initialization error
+  // 🎯 Enhanced initialization states with better UX
+  const getLoadingMessage = () => {
+    if (justLoggedOut) {
+      return "Completing logout...";
+    }
+    return "Loading your experience...";
+  };
+
+  const getLoadingSubtext = () => {
+    if (justLoggedOut) {
+      return "Please wait while we secure your session";
+    }
+    return "Preparing everything for you";
+  };
+
+  // 🚨 Show initialization error
   if (initError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-orange-50/20 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -239,35 +293,76 @@ function App() {
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             {initError}
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-          >
-            Retry
-          </button>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              Retry
+            </button>
+            <button
+              onClick={() => {
+                // Clear all storage and retry
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.reload();
+              }}
+              className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-xl hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Clear & Retry
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Global loading state - show loading while checking initial auth
-  if (isCheckingAuth) {
+  // ⏳ Global loading state - show loading while checking initial auth
+  if (isCheckingAuth && !initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-orange-50/20 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-        <div className="text-center">
-          <div className="relative">
+        <div className="text-center max-w-sm">
+          <div className="relative mb-8">
             <Loading />
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
+            <div
+              className={`absolute inset-0 rounded-full blur-lg opacity-30 animate-pulse ${
+                justLoggedOut
+                  ? "bg-gradient-to-r from-blue-400 to-purple-500"
+                  : "bg-gradient-to-r from-orange-400 to-red-500"
+              }`}
+            ></div>
           </div>
-          <p className="mt-6 text-gray-600 dark:text-gray-300 font-medium text-lg animate-pulse">
-            Loading your experience...
-          </p>
-          <div className="mt-4 w-24 h-1 bg-gradient-to-r from-orange-400 to-red-500 rounded-full mx-auto animate-pulse"></div>
+
+          <div className="space-y-3">
+            <p className="text-gray-600 dark:text-gray-300 font-medium text-lg">
+              {getLoadingMessage()}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {getLoadingSubtext()}
+            </p>
+            <div
+              className={`w-32 h-1 rounded-full mx-auto animate-pulse ${
+                justLoggedOut
+                  ? "bg-gradient-to-r from-blue-400 to-purple-500"
+                  : "bg-gradient-to-r from-orange-400 to-red-500"
+              }`}
+            ></div>
+          </div>
+
+          {/* 🔧 Debug info in development */}
+          {import.meta.env.DEV && (
+            <div className="mt-6 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs">
+              <div>justLoggedOut: {justLoggedOut.toString()}</div>
+              <div>isCheckingAuth: {isCheckingAuth.toString()}</div>
+              <div>initialized: {initialized.toString()}</div>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
+  // 🎉 Main app render
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <RouterProvider router={appRouter} />
