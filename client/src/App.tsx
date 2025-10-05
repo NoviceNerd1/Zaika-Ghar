@@ -68,13 +68,7 @@ const appRouter = createBrowserRouter([
       },
       {
         path: "order/status",
-        element: (
-          <RouteGuard
-            requirements={{ requireAuth: true, requireVerified: true }}
-          >
-            <Success />
-          </RouteGuard>
-        ),
+        element: <Success />,
       },
 
       // Admin routes (require login + verification + admin role)

@@ -18,6 +18,11 @@ export const useOrderStore = create<OrderState>()(
         try {
           set({ loading: true });
 
+          const payload = {
+            ...checkoutSession,
+            frontendOrigin: window.location.origin,
+          };
+
           console.log(
             "Sending request to:",
             `${API_END_POINT}/checkout/create-checkout-session`
@@ -26,7 +31,7 @@ export const useOrderStore = create<OrderState>()(
 
           const response = await axios.post(
             `${API_END_POINT}/checkout/create-checkout-session`,
-            checkoutSession,
+            payload,
             {
               headers: {
                 "Content-Type": "application/json",
