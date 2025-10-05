@@ -63,15 +63,24 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     const menuItems = restaurant.menus;
     const lineItems = createLineItems(checkoutSessionRequest, menuItems);
 
+    // Dynamic Frontend origin handling
+    const frontendOrigin =
+      req.body.frontendOrigin &&
+      /^https:\/\/zaika-ghar-[a-zA-Z0-9\-]+\.vercel\.app$/.test(
+        req.body.frontendOrigin
+      )
+        ? req.body.frontendOrigin
+        : process.env.FRONTEND_URL;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       shipping_address_collection: {
-        allowed_countries: ["GB", "US", "CA"],
+        allowed_countries: ["GB", "US", "CA", "IN"],
       },
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.FRONTEND_URL}/order/status`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart`,
+      success_url: `${frontendOrigin}/order/status`,
+      cancel_url: `${frontendOrigin}/cart`,
       metadata: {
         orderId: order._id.toString(),
         images: JSON.stringify(menuItems.map((item: any) => item.image)),
