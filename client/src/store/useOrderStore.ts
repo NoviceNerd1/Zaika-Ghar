@@ -29,11 +29,13 @@ export const useOrderStore = create<OrderState>()(
           );
           console.log("Request data:", checkoutSession);
 
+          const token = localStorage.getItem("token");
           const response = await axios.post(
             `${API_END_POINT}/checkout/create-checkout-session`,
             payload,
             {
               headers: {
+                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
               withCredentials: true,
