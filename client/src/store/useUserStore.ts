@@ -232,7 +232,11 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ loading: true, justLoggedOut: true }); // 🔑 SET FLAG IMMEDIATELY
       if (import.meta.env.DEV) console.log("🚪 Starting logout process");
 
-      await axios.post(`${API_END_POINT}/logout`);
+      await axios.post(
+        `${API_END_POINT}/logout`,
+        {},
+        { withCredentials: true }
+      );
 
       // Clear frontend state
       get().clearAuth();
@@ -270,7 +274,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         console.log("⚠️ Logout failed, but cleared local state");
       toast.error("Logged out locally - server connection failed");
     } finally {
-      set({ loading: false });
+      set({ user: null, loading: false });
     }
   },
 

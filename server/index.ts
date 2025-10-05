@@ -29,11 +29,9 @@ app.use((req, res, next) => {
 });
 
 // --- CORS setup ---
-// --- CORS setup ---
 const allowedOrigins = [
   "http://localhost:5173",
   "https://zaika-ghar.vercel.app", // production frontend
-  "https://zaika-ghar-i4se3be7u-rishis-projects-8f331978.vercel.app", // preview
 ];
 
 app.use(

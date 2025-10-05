@@ -90,6 +90,7 @@ export const login = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: `Welcome back ${user.fullname}`,
+
       user: userWithoutPassword,
     });
   } catch (error) {
@@ -137,7 +138,8 @@ export const logout = async (_: Request, res: Response) => {
       .clearCookie("token", {
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        sameSite: "none",
+        path: "/",
         // DO NOT set domain
       })
       .status(200)

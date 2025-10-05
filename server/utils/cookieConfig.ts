@@ -1,13 +1,27 @@
 // utils/cookieConfig.ts
-export const getCookieConfig = () => {
+type CookieConfig = {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "lax" | "strict" | "none";
+  path: string;
+  domain?: string;
+  maxAge?: number;
+};
+
+export const getCookieConfig = (withExpiry = true): CookieConfig => {
   const isProduction = process.env.NODE_ENV === "production";
 
-  return {
+  const baseConfig: CookieConfig = {
     httpOnly: true,
     secure: isProduction,
     sameSite: "none",
-    // Remove domain or set it properly based on your actual domain
-    // domain: isProduction ? ".yourdomain.com" : undefined,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: "/",
+    //domain: isProduction ? "zaika-ghar.onrender.com" : undefined,
   };
+
+  if (withExpiry) {
+    baseConfig.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+  }
+
+  return baseConfig;
 };
