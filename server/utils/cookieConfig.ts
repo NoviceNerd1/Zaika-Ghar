@@ -13,7 +13,6 @@ export const getCookieConfig = (withExpiry = true): CookieConfig => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    domain: ".vercel.app",
     path: "/",
     //domain: isProduction ? "zaika-ghar.onrender.com" : undefined,
   };
