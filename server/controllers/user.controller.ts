@@ -137,7 +137,7 @@ export const logout = async (_: Request, res: Response) => {
     return res
       .clearCookie("token", {
         httpOnly: true,
-        secure: isProduction,
+        secure: true,
         sameSite: "none",
         path: "/",
         // DO NOT set domain
