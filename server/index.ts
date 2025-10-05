@@ -34,13 +34,15 @@ const allowedOrigins = [
   "https://zaika-ghar.vercel.app", // production frontend
 ];
 
+const vercelPreviewRegex = /^https:\/\/zaika-ghar-[a-zA-Z0-9\-]+\.vercel\.app$/;
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
         callback(null, true);
       } else {
         console.log(`CORS blocked for origin: ${origin}`);
