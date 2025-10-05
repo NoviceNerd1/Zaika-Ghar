@@ -9,12 +9,11 @@ type CookieConfig = {
 };
 
 export const getCookieConfig = (withExpiry = true): CookieConfig => {
-  const isProduction = process.env.NODE_ENV === "production";
-
   const baseConfig: CookieConfig = {
     httpOnly: true,
-    secure: isProduction,
+    secure: true,
     sameSite: "none",
+    domain: ".vercel.app",
     path: "/",
     //domain: isProduction ? "zaika-ghar.onrender.com" : undefined,
   };
