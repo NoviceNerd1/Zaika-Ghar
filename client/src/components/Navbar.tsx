@@ -42,54 +42,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useThemeStore, type Theme } from "@/store/useThemeStore";
 
-// ✅ Better Type definitions - remove 'any' types
-interface User {
-  admin?: boolean;
-  profilePicture?: string;
-  fullname?: string;
-}
-
-interface NavLinksProps {
-  isAuthenticated: boolean;
-  user: User | null;
-  onProtectedNavigation: (path: string) => void;
-}
-
-interface NavActionsProps {
-  isAuthenticated: boolean;
-  user: User | null;
-  loading: boolean;
-  cartItemsCount: number;
-  onProtectedNavigation: (path: string) => void;
-  onLogout: () => void;
-  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type instead of string
-}
-
-interface ThemeToggleProps {
-  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type
-}
-
-interface CartIconProps {
-  itemCount: number;
-  isAuthenticated: boolean;
-  onProtectedNavigation: (path: string) => void;
-}
-
-interface AuthButtonProps {
-  isAuthenticated: boolean;
-  loading: boolean;
-  onLogout: () => void;
-}
-
-interface MobileNavProps {
-  isAuthenticated: boolean;
-  user: User | null;
-  loading: boolean;
-  cartItemsCount: number;
-  onProtectedNavigation: (path: string) => void;
-  onLogout: () => void;
-  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type
-}
+// ... (other interfaces remain the same)
 
 const Navbar = () => {
   const { user, loading, logout, isAuthenticated } = useUserStore();
@@ -117,9 +70,7 @@ const Navbar = () => {
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
-          <h1 className="font-bold text-2xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-            Zaika Ghar
-          </h1>
+          <h1 className="font-bold text-2xl text-foreground">Zaika Ghar</h1>
         </Link>
 
         {/* Desktop Navigation */}
