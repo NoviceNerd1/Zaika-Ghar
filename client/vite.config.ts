@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => {
             "vendor-react": ["react", "react-dom"],
             "vendor-router": ["react-router-dom"],
             "vendor-state": ["zustand", "axios"],
-            "vendor-utils": ["zod", "react-hook-form"],
+            "vendor-utils": ["zod"],
             "vendor-ui": ["lucide-react", "sonner"],
           },
           chunkFileNames: "assets/[name]-[hash].js",
