@@ -42,7 +42,54 @@ import { useUserStore } from "@/store/useUserStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useThemeStore, type Theme } from "@/store/useThemeStore";
 
-// ... (other interfaces remain the same)
+// ✅ Better Type definitions - remove 'any' types
+interface User {
+  admin?: boolean;
+  profilePicture?: string;
+  fullname?: string;
+}
+
+interface NavLinksProps {
+  isAuthenticated: boolean;
+  user: User | null;
+  onProtectedNavigation: (path: string) => void;
+}
+
+interface NavActionsProps {
+  isAuthenticated: boolean;
+  user: User | null;
+  loading: boolean;
+  cartItemsCount: number;
+  onProtectedNavigation: (path: string) => void;
+  onLogout: () => void;
+  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type instead of string
+}
+
+interface ThemeToggleProps {
+  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type
+}
+
+interface CartIconProps {
+  itemCount: number;
+  isAuthenticated: boolean;
+  onProtectedNavigation: (path: string) => void;
+}
+
+interface AuthButtonProps {
+  isAuthenticated: boolean;
+  loading: boolean;
+  onLogout: () => void;
+}
+
+interface MobileNavProps {
+  isAuthenticated: boolean;
+  user: User | null;
+  loading: boolean;
+  cartItemsCount: number;
+  onProtectedNavigation: (path: string) => void;
+  onLogout: () => void;
+  onThemeChange: (theme: Theme) => void; // ✅ Use Theme type
+}
 
 const Navbar = () => {
   const { user, loading, logout, isAuthenticated } = useUserStore();
@@ -70,7 +117,9 @@ const Navbar = () => {
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
-          <h1 className="font-bold text-2xl text-foreground">Zaika Ghar</h1>
+          <h1 className="font-bold text-2xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Zaika Ghar
+          </h1>
         </Link>
 
         {/* Desktop Navigation */}
@@ -121,7 +170,7 @@ const NavLinks = ({
     <div className="hidden md:flex items-center gap-8">
       <Link
         to="/"
-        className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+        className="text-card-foreground hover:text-primary transition-colors duration-200 font-medium"
       >
         Home
       </Link>
@@ -131,13 +180,13 @@ const NavLinks = ({
         <>
           <Link
             to="/profile"
-            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            className="text-card-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Profile
           </Link>
           <Link
             to="/order/status"
-            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            className="text-card-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Order
           </Link>
@@ -146,13 +195,13 @@ const NavLinks = ({
         <>
           <button
             onClick={() => onProtectedNavigation("/profile")}
-            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            className="text-card-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Profile
           </button>
           <button
             onClick={() => onProtectedNavigation("/order/status")}
-            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            className="text-card-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Order
           </button>
@@ -161,24 +210,24 @@ const NavLinks = ({
 
       {/* Admin Menu */}
       {user?.admin && isAuthenticated && (
-        <Menubar className="border-border">
+        <Menubar className="border-border bg-card">
           <MenubarMenu>
-            <MenubarTrigger className="cursor-pointer text-foreground data-[state=open]:bg-accent">
+            <MenubarTrigger className="cursor-pointer text-card-foreground data-[state=open]:bg-accent hover:bg-accent/50">
               Dashboard
             </MenubarTrigger>
-            <MenubarContent className="bg-popover border-border">
+            <MenubarContent className="bg-card border-border shadow-lg">
               <Link to="/admin/restaurant">
-                <MenubarItem className="cursor-pointer hover:bg-accent">
+                <MenubarItem className="cursor-pointer hover:bg-accent text-card-foreground">
                   Restaurant
                 </MenubarItem>
               </Link>
               <Link to="/admin/menu">
-                <MenubarItem className="cursor-pointer hover:bg-accent">
+                <MenubarItem className="cursor-pointer hover:bg-accent text-card-foreground">
                   Menu
                 </MenubarItem>
               </Link>
               <Link to="/admin/orders">
-                <MenubarItem className="cursor-pointer hover:bg-accent">
+                <MenubarItem className="cursor-pointer hover:bg-accent text-card-foreground">
                   Orders
                 </MenubarItem>
               </Link>
@@ -211,9 +260,9 @@ const NavActions = ({
       />
 
       {isAuthenticated && user && (
-        <Avatar className="border-2 border-border">
+        <Avatar className="border-2 border-border shadow-sm">
           <AvatarImage src={user?.profilePicture} alt="profilephoto" />
-          <AvatarFallback className="bg-primary text-primary-foreground">
+          <AvatarFallback className="bg-primary text-primary-foreground font-medium">
             {user?.fullname?.charAt(0) || "U"}
           </AvatarFallback>
         </Avatar>
@@ -232,22 +281,29 @@ const NavActions = ({
 const ThemeToggle = ({ onThemeChange }: ThemeToggleProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="outline" size="icon" className="border-border">
+      <Button
+        variant="outline"
+        size="icon"
+        className="border-border bg-background hover:bg-accent"
+      >
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="bg-popover border-border">
+    <DropdownMenuContent
+      align="end"
+      className="bg-card border-border shadow-xl"
+    >
       <DropdownMenuItem
         onClick={() => onThemeChange("light")}
-        className="cursor-pointer hover:bg-accent"
+        className="cursor-pointer hover:bg-accent text-card-foreground focus:bg-accent focus:text-card-foreground"
       >
         Light
       </DropdownMenuItem>
       <DropdownMenuItem
         onClick={() => onThemeChange("dark")}
-        className="cursor-pointer hover:bg-accent"
+        className="cursor-pointer hover:bg-accent text-card-foreground focus:bg-accent focus:text-card-foreground"
       >
         Dark
       </DropdownMenuItem>
@@ -262,10 +318,14 @@ const CartIcon = ({
   onProtectedNavigation,
 }: CartIconProps) => {
   const cartContent = (
-    <Button variant="outline" size="icon" className="relative border-border">
-      <ShoppingCart className="h-5 w-5" />
+    <Button
+      variant="outline"
+      size="icon"
+      className="relative border-border bg-background hover:bg-accent"
+    >
+      <ShoppingCart className="h-5 w-5 text-card-foreground" />
       {itemCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+        <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium border border-background shadow-sm">
           {itemCount}
         </span>
       )}
@@ -298,7 +358,7 @@ const AuthButton = ({
 }: AuthButtonProps) => {
   if (loading) {
     return (
-      <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         Please wait
       </Button>
@@ -309,7 +369,7 @@ const AuthButton = ({
     return (
       <Button
         onClick={onLogout}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 shadow-sm hover:shadow-md transition-all"
       >
         <LogOut className="w-4 h-4" />
         Logout
@@ -319,7 +379,7 @@ const AuthButton = ({
 
   return (
     <Link to="/login">
-      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2">
+      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 shadow-sm hover:shadow-md transition-all">
         <LogIn className="w-4 h-4" />
         Login
       </Button>
@@ -344,14 +404,16 @@ const MobileNav = ({
         <Button
           size={"icon"}
           variant="outline"
-          className="rounded-lg border-border"
+          className="rounded-lg border-border bg-background hover:bg-accent"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-5 w-5 text-card-foreground" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col bg-background border-border">
+      <SheetContent className="flex flex-col bg-card border-border shadow-xl">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
-          <SheetTitle className="text-foreground">Zaika Ghar</SheetTitle>
+          <SheetTitle className="text-card-foreground font-bold">
+            Zaika Ghar
+          </SheetTitle>
           <ThemeToggle onThemeChange={onThemeChange} />
         </SheetHeader>
         <Separator className="my-4 bg-border" />
@@ -362,23 +424,23 @@ const MobileNav = ({
             <>
               <Link
                 to="/profile"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <User className="h-5 w-5" />
+                <User className="h-5 w-5 text-card-foreground/70" />
                 <span>Profile</span>
               </Link>
               <Link
                 to="/order/status"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <HandPlatter className="h-5 w-5" />
+                <HandPlatter className="h-5 w-5 text-card-foreground/70" />
                 <span>Order</span>
               </Link>
               <Link
                 to="/cart"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-5 w-5 text-card-foreground/70" />
                 <span>Cart ({cartItemsCount})</span>
               </Link>
             </>
@@ -386,23 +448,23 @@ const MobileNav = ({
             <>
               <button
                 onClick={() => onProtectedNavigation("/profile")}
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors w-full text-left"
               >
-                <User className="h-5 w-5" />
+                <User className="h-5 w-5 text-card-foreground/70" />
                 <span>Profile</span>
               </button>
               <button
                 onClick={() => onProtectedNavigation("/order/status")}
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors w-full text-left"
               >
-                <HandPlatter className="h-5 w-5" />
+                <HandPlatter className="h-5 w-5 text-card-foreground/70" />
                 <span>Order</span>
               </button>
               <button
                 onClick={() => onProtectedNavigation("/cart")}
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors w-full text-left"
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-5 w-5 text-card-foreground/70" />
                 <span>Cart ({cart.length})</span>
               </button>
             </>
@@ -413,23 +475,23 @@ const MobileNav = ({
             <>
               <Link
                 to="/admin/menu"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <SquareMenu className="h-5 w-5" />
+                <SquareMenu className="h-5 w-5 text-card-foreground/70" />
                 <span>Menu</span>
               </Link>
               <Link
                 to="/admin/restaurant"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <UtensilsCrossed className="h-5 w-5" />
+                <UtensilsCrossed className="h-5 w-5 text-card-foreground/70" />
                 <span>Restaurant</span>
               </Link>
               <Link
                 to="/admin/orders"
-                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-card-foreground font-medium transition-colors"
               >
-                <PackageCheck className="h-5 w-5" />
+                <PackageCheck className="h-5 w-5 text-card-foreground/70" />
                 <span>Restaurant Orders</span>
               </Link>
             </>
@@ -439,14 +501,14 @@ const MobileNav = ({
         <SheetFooter className="flex flex-col gap-4 mt-6">
           {/* User Info */}
           {isAuthenticated && user && (
-            <div className="flex items-center gap-3 p-3 bg-accent rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-accent rounded-lg border border-border">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.profilePicture} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                   {user?.fullname?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
-              <h1 className="font-semibold text-foreground text-sm">
+              <h1 className="font-semibold text-card-foreground text-sm">
                 {user.fullname || "User"}
               </h1>
             </div>
@@ -454,21 +516,21 @@ const MobileNav = ({
 
           <SheetClose asChild>
             {loading ? (
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full shadow-sm">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
               </Button>
             ) : isAuthenticated ? (
               <Button
                 onClick={onLogout}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2 shadow-sm hover:shadow-md transition-all"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
               </Button>
             ) : (
               <Link to="/login" className="w-full">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2 shadow-sm hover:shadow-md transition-all">
                   <LogIn className="w-4 h-4" />
                   Login
                 </Button>
