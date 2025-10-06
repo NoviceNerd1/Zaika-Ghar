@@ -111,14 +111,14 @@ const EditMenu = ({
     <>
       {/* Edit Menu Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="sm:max-w-md md:max-w-lg bg-card/95 backdrop-blur-sm border-border/50 shadow-2xl rounded-2xl">
+        <DialogContent className="sm:max-w-md md:max-w-lg bg-card border-border shadow-xl rounded-2xl">
           <DialogHeader className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg">
-                <Edit3 className="h-6 w-6 text-primary-foreground" />
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <Edit3 className="h-6 w-6 text-primary" />
               </div>
               <div className="space-y-1">
-                <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                <DialogTitle className="text-2xl font-bold text-card-foreground">
                   Edit Menu Item
                 </DialogTitle>
                 <DialogDescription className="text-muted-foreground text-base">
@@ -135,7 +135,7 @@ const EditMenu = ({
               <div className="space-y-3">
                 <Label
                   htmlFor="name"
-                  className="text-sm font-semibold flex items-center gap-2 text-foreground/90"
+                  className="text-sm font-semibold flex items-center gap-2 text-card-foreground"
                 >
                   <div className="p-1.5 bg-primary/10 rounded-lg">
                     <Utensils className="h-3.5 w-3.5 text-primary" />
@@ -149,10 +149,10 @@ const EditMenu = ({
                   value={input.name}
                   onChange={changeEventHandler}
                   placeholder="Enter menu item name"
-                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 border-2 bg-background/50 backdrop-blur-sm"
+                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/20 focus:border-primary border-border bg-background"
                 />
                 {error.name && (
-                  <span className="text-xs font-medium text-destructive flex items-center gap-1 animate-pulse">
+                  <span className="text-xs font-medium text-destructive flex items-center gap-1">
                     <Sparkles className="h-3 w-3" />
                     {error.name}
                   </span>
@@ -163,7 +163,7 @@ const EditMenu = ({
               <div className="space-y-3">
                 <Label
                   htmlFor="description"
-                  className="text-sm font-semibold flex items-center gap-2 text-foreground/90"
+                  className="text-sm font-semibold flex items-center gap-2 text-card-foreground"
                 >
                   <div className="p-1.5 bg-primary/10 rounded-lg">
                     <FileText className="h-3.5 w-3.5 text-primary" />
@@ -177,10 +177,10 @@ const EditMenu = ({
                   value={input.description}
                   onChange={changeEventHandler}
                   placeholder="Describe your menu item"
-                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 border-2 bg-background/50 backdrop-blur-sm"
+                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/20 focus:border-primary border-border bg-background"
                 />
                 {error.description && (
-                  <span className="text-xs font-medium text-destructive flex items-center gap-1 animate-pulse">
+                  <span className="text-xs font-medium text-destructive flex items-center gap-1">
                     <Sparkles className="h-3 w-3" />
                     {error.description}
                   </span>
@@ -191,7 +191,7 @@ const EditMenu = ({
               <div className="space-y-3">
                 <Label
                   htmlFor="price"
-                  className="text-sm font-semibold flex items-center gap-2 text-foreground/90"
+                  className="text-sm font-semibold flex items-center gap-2 text-card-foreground"
                 >
                   <div className="p-1.5 bg-primary/10 rounded-lg">
                     <IndianRupee className="h-3.5 w-3.5 text-primary" />
@@ -205,12 +205,12 @@ const EditMenu = ({
                   value={input.price}
                   onChange={changeEventHandler}
                   placeholder="Enter price in rupees"
-                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 border-2 bg-background/50 backdrop-blur-sm"
+                  className="h-12 transition-all duration-300 focus:ring-2 focus:ring-primary/20 focus:border-primary border-border bg-background"
                   min="0"
                   step="0.01"
                 />
                 {error.price && (
-                  <span className="text-xs font-medium text-destructive flex items-center gap-1 animate-pulse">
+                  <span className="text-xs font-medium text-destructive flex items-center gap-1">
                     <Sparkles className="h-3 w-3" />
                     {error.price}
                   </span>
@@ -221,14 +221,14 @@ const EditMenu = ({
               <div className="space-y-3">
                 <Label
                   htmlFor="image"
-                  className="text-sm font-semibold flex items-center gap-2 text-foreground/90"
+                  className="text-sm font-semibold flex items-center gap-2 text-card-foreground"
                 >
                   <div className="p-1.5 bg-primary/10 rounded-lg">
                     <Image className="h-3.5 w-3.5 text-primary" />
                   </div>
                   Menu Image
                 </Label>
-                <div className="border-2 border-dashed border-border/50 rounded-xl p-6 transition-all duration-300 hover:border-primary/50 hover:bg-accent/30 hover:shadow-lg group cursor-pointer">
+                <div className="border-2 border-dashed border-border rounded-xl p-6 transition-all duration-300 hover:border-primary/50 hover:bg-accent group cursor-pointer">
                   <Input
                     id="image"
                     type="file"
@@ -240,7 +240,7 @@ const EditMenu = ({
                       })
                     }
                     accept="image/*"
-                    className="cursor-pointer file:cursor-pointer file:bg-gradient-to-r file:from-primary file:to-primary/90 file:text-primary-foreground file:px-4 file:py-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:shadow-lg file:transition-all file:duration-300 file:hover:shadow-xl"
+                    className="cursor-pointer file:cursor-pointer file:bg-primary file:text-primary-foreground file:px-4 file:py-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
@@ -249,7 +249,7 @@ const EditMenu = ({
                     : "Add an appetizing photo to showcase your dish"}
                 </p>
                 {error.image && (
-                  <span className="text-xs font-medium text-destructive flex items-center gap-1 animate-pulse">
+                  <span className="text-xs font-medium text-destructive flex items-center gap-1">
                     <Sparkles className="h-3 w-3" />
                     {error.image?.name}
                   </span>
@@ -258,18 +258,17 @@ const EditMenu = ({
             </div>
 
             {/* Enhanced Dialog Footer */}
-            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border/50">
+            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 {/* Enhanced Delete Button */}
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full sm:w-auto order-3 sm:order-1 h-12 bg-gradient-to-r from-destructive to-destructive/90 hover:from-destructive/90 hover:to-destructive shadow-lg hover:shadow-destructive/25 transform hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden"
+                  className="w-full sm:w-auto order-3 sm:order-1 h-12 bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
                   disabled={loading}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <Trash2 className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  <Trash2 className="mr-2 w-4 h-4" />
                   Delete Menu
                 </Button>
 
@@ -279,7 +278,7 @@ const EditMenu = ({
                     type="button"
                     variant="outline"
                     onClick={() => setEditOpen(false)}
-                    className="w-full sm:w-auto order-2 sm:order-1 h-12 border-2 hover:bg-accent/50 transition-all duration-300"
+                    className="w-full sm:w-auto order-2 sm:order-1 h-12 border-border hover:bg-accent transition-all duration-300"
                     disabled={loading}
                   >
                     Cancel
@@ -289,7 +288,7 @@ const EditMenu = ({
                   {loading ? (
                     <Button
                       disabled
-                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary h-12 shadow-lg transition-all duration-300 order-1 sm:order-2"
+                      className="w-full sm:w-auto bg-primary hover:bg-primary/90 h-12 transition-all duration-300 order-1 sm:order-2 text-primary-foreground"
                     >
                       <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                       Updating Menu...
@@ -297,10 +296,9 @@ const EditMenu = ({
                   ) : (
                     <Button
                       type="submit"
-                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary h-12 shadow-2xl hover:shadow-primary/25 transform hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden order-1 sm:order-2"
+                      className="w-full sm:w-auto bg-primary hover:bg-primary/90 h-12 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 order-1 sm:order-2 text-primary-foreground"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <Edit3 className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                      <Edit3 className="mr-2 w-4 h-4" />
                       Update Menu
                     </Button>
                   )}
@@ -313,7 +311,7 @@ const EditMenu = ({
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-sm border-border/50 shadow-2xl rounded-2xl">
+        <DialogContent className="sm:max-w-md bg-card border-border shadow-xl rounded-2xl">
           <DialogHeader className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-destructive/10 rounded-xl">
@@ -331,12 +329,12 @@ const EditMenu = ({
             </div>
           </DialogHeader>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border/50">
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
             <Button
               type="button"
               variant="outline"
               onClick={() => setShowDeleteConfirm(false)}
-              className="w-full sm:w-auto h-11 border-2 hover:bg-accent/50 transition-all duration-300"
+              className="w-full sm:w-auto h-11 border-border hover:bg-accent transition-all duration-300"
             >
               Cancel
             </Button>
@@ -344,7 +342,7 @@ const EditMenu = ({
               type="button"
               variant="destructive"
               onClick={handleDeleteMenu}
-              className="w-full sm:w-auto h-11 bg-gradient-to-r from-destructive to-destructive/90 hover:from-destructive/90 hover:to-destructive shadow-lg hover:shadow-destructive/25 transform hover:-translate-y-0.5 transition-all duration-300"
+              className="w-full sm:w-auto h-11 bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg hover:shadow-lg transition-all duration-300"
             >
               <Trash2 className="mr-2 w-4 h-4" />
               Yes, Delete

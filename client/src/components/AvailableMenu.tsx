@@ -14,10 +14,10 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
     <div className="p-4 md:p-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-card-foreground mb-3">
           Our Delicious Menu
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-lg">
+        <p className="text-muted-foreground text-lg">
           Freshly prepared dishes just for you
         </p>
       </div>
@@ -27,7 +27,7 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
         {menus.map((menu: MenuItem) => (
           <Card
             key={menu._id}
-            className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:translate-y-[-4px]"
+            className="group bg-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border hover:translate-y-[-4px]"
           >
             {/* Image Section */}
             <div className="relative overflow-hidden">
@@ -38,7 +38,7 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
               />
               {/* Popular Badge */}
               <div className="absolute top-3 left-3">
-                <Badge className="bg-white/95 dark:bg-gray-800/95 text-orange font-semibold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1">
+                <Badge className="bg-background/95 text-primary font-semibold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 border border-border">
                   <Star className="w-3 h-3 fill-current" />
                   Popular
                 </Badge>
@@ -51,7 +51,7 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
                     addToCart(menu);
                     navigate("/cart");
                   }}
-                  className="bg-orange hover:bg-hoverOrange text-white rounded-full shadow-lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg border-0"
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -60,25 +60,23 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
 
             {/* Content Section */}
             <CardContent className="p-5">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
+              <h2 className="text-xl font-bold text-card-foreground mb-2 line-clamp-1">
                 {menu.name}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-2 mb-4">
+              <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-4">
                 {menu.description}
               </p>
 
               {/* Price Section */}
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Price
-                  </span>
-                  <h3 className="text-2xl font-bold text-orange">
+                  <span className="text-sm text-muted-foreground">Price</span>
+                  <h3 className="text-2xl font-bold text-primary">
                     ₹{menu.price}
                   </h3>
                 </div>
                 {/* Delivery Info */}
-                <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+                <div className="flex items-center gap-1 text-muted-foreground text-sm">
                   <Clock className="w-4 h-4" />
                   <span>15-20 min</span>
                 </div>
@@ -92,7 +90,7 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
                   addToCart(menu);
                   navigate("/cart");
                 }}
-                className="w-full bg-orange hover:bg-hoverOrange text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 group-hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 group-hover:scale-105 flex items-center justify-center gap-2 border-0"
               >
                 <Plus className="w-5 h-5" />
                 Add to Cart
@@ -105,13 +103,13 @@ const AvailableMenu = ({ menus }: { menus: MenuItem[] }) => {
       {/* Empty State (if needed) */}
       {menus.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Clock className="w-12 h-12 text-gray-400" />
+          <div className="w-24 h-24 bg-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
+            <Clock className="w-12 h-12 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-card-foreground mb-2">
             Menu Coming Soon
           </h3>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             We're preparing something delicious for you!
           </p>
         </div>

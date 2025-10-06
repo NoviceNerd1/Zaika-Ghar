@@ -35,20 +35,15 @@ const Orders = () => {
 
   const getStatusColor = (status: string) => {
     const colors = {
-      pending:
-        "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800",
-      confirmed:
-        "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800",
-      preparing:
-        "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800",
-      outfordelivery:
-        "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800",
-      delivered:
-        "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800",
+      pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      confirmed: "bg-blue-100 text-blue-800 border-blue-200",
+      preparing: "bg-orange-100 text-orange-800 border-orange-200",
+      outfordelivery: "bg-purple-100 text-purple-800 border-purple-200",
+      delivered: "bg-green-100 text-green-800 border-green-200",
     };
     return (
       colors[status as keyof typeof colors] ||
-      "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+      "bg-accent text-muted-foreground border-border"
     );
   };
 
@@ -91,7 +86,7 @@ const Orders = () => {
           <div className="p-2 bg-primary/10 rounded-lg">
             <Package className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">
+          <h1 className="text-3xl font-bold text-card-foreground">
             Orders Overview
           </h1>
         </div>
@@ -104,18 +99,22 @@ const Orders = () => {
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-medium">Pending</span>
+              <span className="text-sm font-medium text-card-foreground">
+                Pending
+              </span>
             </div>
-            <p className="text-2xl font-bold mt-1">
+            <p className="text-2xl font-bold mt-1 text-card-foreground">
               {orders.filter((order) => order.status === "pending").length}
             </p>
           </div>
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-center gap-2">
               <ChefHat className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium">Preparing</span>
+              <span className="text-sm font-medium text-card-foreground">
+                Preparing
+              </span>
             </div>
-            <p className="text-2xl font-bold mt-1">
+            <p className="text-2xl font-bold mt-1 text-card-foreground">
               {
                 orders.filter(
                   (order) =>
@@ -127,9 +126,11 @@ const Orders = () => {
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-center gap-2">
               <Truck className="h-4 w-4 text-purple-600" />
-              <span className="text-sm font-medium">Delivery</span>
+              <span className="text-sm font-medium text-card-foreground">
+                Delivery
+              </span>
             </div>
-            <p className="text-2xl font-bold mt-1">
+            <p className="text-2xl font-bold mt-1 text-card-foreground">
               {
                 orders.filter((order) => order.status === "outfordelivery")
                   .length
@@ -139,9 +140,11 @@ const Orders = () => {
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-medium">Completed</span>
+              <span className="text-sm font-medium text-card-foreground">
+                Completed
+              </span>
             </div>
-            <p className="text-2xl font-bold mt-1">
+            <p className="text-2xl font-bold mt-1 text-card-foreground">
               {orders.filter((order) => order.status === "delivered").length}
             </p>
           </div>
@@ -151,9 +154,9 @@ const Orders = () => {
       {/* Orders Grid */}
       <div className="space-y-6">
         {orders.length === 0 ? (
-          <div className="text-center py-12 bg-card rounded-2xl border border-border shadow-sm">
-            <Package className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
+          <div className="text-center py-12 bg-card rounded-2xl border border-border">
+            <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-card-foreground mb-2">
               No Orders Yet
             </h3>
             <p className="text-muted-foreground">
@@ -168,7 +171,7 @@ const Orders = () => {
             return (
               <div
                 key={order._id}
-                className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden transition-all duration-200 hover:shadow-xl"
+                className="bg-card rounded-2xl border border-border overflow-hidden transition-all duration-200 hover:shadow-lg"
               >
                 <div className="p-6 sm:p-8">
                   <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -181,7 +184,7 @@ const Orders = () => {
                             <User className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <h2 className="text-xl font-semibold text-foreground">
+                            <h2 className="text-xl font-semibold text-card-foreground">
                               {order.deliveryDetails.name}
                             </h2>
                             <p className="text-sm text-muted-foreground">
@@ -202,10 +205,10 @@ const Orders = () => {
 
                       {/* Order Information */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="flex items-center gap-3 text-foreground">
+                        <div className="flex items-center gap-3">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="text-sm font-medium text-card-foreground">
                               Delivery Address
                             </p>
                             <p className="text-sm text-muted-foreground">
@@ -214,20 +217,24 @@ const Orders = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 text-foreground">
+                        <div className="flex items-center gap-3">
                           <DollarSign className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <p className="text-sm font-medium">Total Amount</p>
+                            <p className="text-sm font-medium text-card-foreground">
+                              Total Amount
+                            </p>
                             <p className="text-lg font-semibold text-primary">
                               ${(order.totalAmount / 100).toFixed(2)}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 text-foreground">
+                        <div className="flex items-center gap-3">
                           <User className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <p className="text-sm font-medium">Contact</p>
+                            <p className="text-sm font-medium text-card-foreground">
+                              Contact
+                            </p>
                             <p className="text-sm text-muted-foreground">
                               {order.deliveryDetails.email}
                             </p>
@@ -241,7 +248,7 @@ const Orders = () => {
                       {/* Order Items Preview - Only show if items exist */}
                       {orderItems.length > 0 && (
                         <div className="pt-4 border-t border-border">
-                          <p className="text-sm font-medium text-foreground mb-2">
+                          <p className="text-sm font-medium text-card-foreground mb-2">
                             Order Items ({orderItems.length})
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -280,7 +287,7 @@ const Orders = () => {
 
                     {/* Status Selector */}
                     <div className="w-full lg:w-64 shrink-0">
-                      <Label className="block text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                      <Label className="block text-sm font-medium text-card-foreground mb-3 flex items-center gap-2">
                         <Clock className="h-4 w-4" />
                         Update Status
                       </Label>
@@ -290,10 +297,10 @@ const Orders = () => {
                         }
                         defaultValue={order.status}
                       >
-                        <SelectTrigger className="w-full bg-background border-input hover:bg-accent/50 transition-colors duration-200">
+                        <SelectTrigger className="w-full bg-background border-border hover:bg-accent transition-colors duration-200">
                           <SelectValue placeholder="Select Status" />
                         </SelectTrigger>
-                        <SelectContent className="bg-card border-border shadow-lg">
+                        <SelectContent className="bg-card border-border">
                           <SelectGroup>
                             {[
                               "pending",

@@ -33,18 +33,16 @@ const FilterPage = () => {
   const hasActiveFilters = appliedFilter.length > 0;
 
   return (
-    <div className="lg:w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+    <div className="lg:w-80 bg-card rounded-2xl shadow-lg border border-border p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-orange/10 rounded-lg">
-            <Filter className="w-5 h-5 text-orange" />
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Filter className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-gray-900 dark:text-white">
-              Filters
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <h1 className="font-bold text-lg text-card-foreground">Filters</h1>
+            <p className="text-sm text-muted-foreground">
               Choose your favorite cuisines
             </p>
           </div>
@@ -55,7 +53,7 @@ const FilterPage = () => {
             variant="ghost"
             size="sm"
             onClick={resetAppliedFilter}
-            className="text-orange hover:text-hoverOrange hover:bg-orange/10 px-3 py-2 rounded-lg transition-colors duration-200"
+            className="text-primary hover:text-primary/80 hover:bg-primary/10 px-3 py-2 rounded-lg transition-colors duration-200"
           >
             <X className="w-4 h-4 mr-1" />
             Clear
@@ -67,10 +65,10 @@ const FilterPage = () => {
       {hasActiveFilters && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-card-foreground">
               Active filters:
             </span>
-            <Badge variant="secondary" className="bg-orange/10 text-orange">
+            <Badge variant="secondary" className="bg-primary/10 text-primary">
               {appliedFilter.length}
             </Badge>
           </div>
@@ -79,12 +77,12 @@ const FilterPage = () => {
               <Badge
                 key={index}
                 variant="outline"
-                className="bg-orange/5 text-orange border-orange/20 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 group hover:bg-orange/10 transition-colors duration-200"
+                className="bg-primary/5 text-primary border-primary/20 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 group hover:bg-primary/10 transition-colors duration-200"
               >
                 {filter}
                 <X
                   size={14}
-                  className="cursor-pointer opacity-70 group-hover:opacity-100 transition-opacity duration-200 hover:text-hoverOrange"
+                  className="cursor-pointer opacity-70 group-hover:opacity-100 transition-opacity duration-200 hover:text-primary/80"
                   onClick={() => appliedFilterHandler(filter)}
                 />
               </Badge>
@@ -95,7 +93,7 @@ const FilterPage = () => {
 
       {/* Filter Options */}
       <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-sm uppercase tracking-wide mb-4">
+        <h3 className="font-semibold text-card-foreground text-sm uppercase tracking-wide mb-4">
           Cuisine Types
         </h3>
 
@@ -107,8 +105,8 @@ const FilterPage = () => {
                 key={option.id}
                 className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer group ${
                   isChecked
-                    ? "bg-orange/10 border-orange/30 shadow-sm"
-                    : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                    ? "bg-primary/10 border-primary/30 shadow-sm"
+                    : "bg-accent border-border hover:bg-accent/80"
                 }`}
                 onClick={() => appliedFilterHandler(option.label)}
               >
@@ -117,9 +115,7 @@ const FilterPage = () => {
                     id={option.id}
                     checked={isChecked}
                     className={`w-5 h-5 border-2 ${
-                      isChecked
-                        ? "bg-orange border-orange"
-                        : "border-gray-300 dark:border-gray-500"
+                      isChecked ? "bg-primary border-primary" : "border-border"
                     } transition-colors duration-200`}
                   />
                 </div>
@@ -127,15 +123,15 @@ const FilterPage = () => {
                   htmlFor={option.id}
                   className={`flex-1 text-sm font-medium leading-none cursor-pointer select-none transition-colors duration-200 ${
                     isChecked
-                      ? "text-orange"
-                      : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                      ? "text-primary"
+                      : "text-card-foreground group-hover:text-card-foreground/90"
                   }`}
                 >
                   {option.label}
                 </Label>
 
                 {isChecked && (
-                  <div className="w-2 h-2 bg-orange rounded-full animate-pulse" />
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 )}
               </div>
             );
@@ -145,11 +141,11 @@ const FilterPage = () => {
 
       {/* Reset All Button - Bottom */}
       {hasActiveFilters && (
-        <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="mt-6 pt-4 border-t border-border">
           <Button
             variant="outline"
             onClick={resetAppliedFilter}
-            className="w-full border-orange/30 text-orange hover:bg-orange/10 hover:text-hoverOrange hover:border-orange/50 transition-all duration-200 py-2.5 rounded-xl font-medium"
+            className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80 hover:border-primary/50 transition-all duration-200 py-2.5 rounded-xl font-medium"
           >
             <X className="w-4 h-4 mr-2" />
             Reset All Filters

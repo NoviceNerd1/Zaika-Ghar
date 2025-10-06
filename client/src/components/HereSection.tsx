@@ -11,10 +11,8 @@ const HeroSection = () => {
 
   const handleSearch = () => {
     if (searchText.trim()) {
-      // If there's search text, navigate to search results
       navigate(`/search/${searchText.trim()}`);
     } else {
-      // If no search text, navigate to show all restaurants
       navigate("/search");
     }
   };
@@ -26,12 +24,12 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-background to-amber-50 dark:from-gray-900 dark:via-background dark:to-gray-800 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="flex flex-col lg:flex-row max-w-7xl mx-auto items-center justify-between gap-12 lg:gap-20">
         {/* Text Content */}
         <div className="flex flex-col gap-8 lg:w-[45%] text-center lg:text-left">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-orange/10 text-orange dark:bg-orange/20 dark:text-amber-300 px-4 py-2 rounded-full w-fit mx-auto lg:mx-0">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full w-fit mx-auto lg:mx-0">
             <Sparkles className="size-4" />
             <span className="text-sm font-medium">Fastest Food Delivery</span>
           </div>
@@ -40,11 +38,11 @@ const HeroSection = () => {
           <div className="flex flex-col gap-6">
             <h1 className="font-bold text-4xl lg:text-6xl leading-tight text-foreground">
               Order Food{" "}
-              <span className="text-orange dark:text-amber-400 bg-gradient-to-r from-orange to-amber-500 dark:from-amber-400 dark:to-orange-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 Anytime
               </span>{" "}
               &{" "}
-              <span className="text-orange dark:text-amber-400 bg-gradient-to-r from-orange to-amber-500 dark:from-amber-400 dark:to-orange-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 Anywhere
               </span>
             </h1>
@@ -64,12 +62,12 @@ const HeroSection = () => {
                 placeholder="Search restaurant by name, city & country..."
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-12 pr-4 py-6 text-lg border-2 border-border focus:border-orange/50 dark:focus:border-amber-400/50 shadow-xl rounded-2xl focus-visible:ring-0 transition-all duration-300 bg-card text-card-foreground"
+                className="pl-12 pr-4 py-6 text-lg border-2 border-border focus:border-primary/50 shadow-xl rounded-2xl focus-visible:ring-0 transition-all duration-300 bg-card text-card-foreground"
               />
             </div>
             <Button
               onClick={handleSearch}
-              className="py-6 text-lg font-semibold bg-orange hover:bg-hoverOrange dark:bg-amber-600 dark:hover:bg-amber-700 text-primary-foreground rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+              className="py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
             >
               <Search className="mr-2 size-5" />
               {searchText.trim()
@@ -100,23 +98,23 @@ const HeroSection = () => {
         {/* Image Content */}
         <div className="lg:w-[50%] relative">
           <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-r from-orange to-amber-500 dark:from-amber-600 dark:to-orange-400 rounded-3xl blur-lg opacity-20 dark:opacity-30"></div>
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary to-primary/70 rounded-3xl blur-lg opacity-20"></div>
             <img
               src={HereImage}
               alt="Delicious pizza ready for delivery"
-              className="relative rounded-2xl shadow-2xl object-cover w-full max-w-2xl transform hover:scale-105 transition-transform duration-500"
+              className="relative rounded-2xl shadow-2xl object-cover w-full max-w-2xl transform hover:scale-105 transition-transform duration-500 border border-border"
             />
           </div>
 
           {/* Floating Elements */}
-          <div className="absolute -top-4 -right-4 bg-card dark:bg-gray-800 px-4 py-3 rounded-2xl shadow-lg border border-border">
+          <div className="absolute -top-4 -right-4 bg-card px-4 py-3 rounded-2xl shadow-lg border border-border">
             <div className="font-semibold text-card-foreground">
               🔥 Hot & Fresh
             </div>
             <div className="text-sm text-muted-foreground">30 min delivery</div>
           </div>
 
-          <div className="absolute -bottom-4 -left-4 bg-card dark:bg-gray-800 px-4 py-3 rounded-2xl shadow-lg border border-border">
+          <div className="absolute -bottom-4 -left-4 bg-card px-4 py-3 rounded-2xl shadow-lg border border-border">
             <div className="font-semibold text-card-foreground">
               ⭐ 4.8 Rating
             </div>

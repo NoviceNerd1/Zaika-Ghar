@@ -32,7 +32,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -115,14 +114,16 @@ const Navbar = () => {
   const cartItemsCount = cart.length;
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between h-14">
-        <Link to="/">
-          <h1 className="font-bold md:font-extrabold text-2xl">Zaika Ghar</h1>
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="flex items-center justify-between h-16">
+        <Link to="/" className="flex items-center">
+          <h1 className="font-bold text-2xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Zaika Ghar
+          </h1>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-8">
           <NavLinks
             isAuthenticated={isAuthenticated}
             user={user}
@@ -136,12 +137,12 @@ const Navbar = () => {
             cartItemsCount={cartItemsCount}
             onProtectedNavigation={handleProtectedNavigation}
             onLogout={handleLogout}
-            onThemeChange={setTheme} // ✅ Now matches the type
+            onThemeChange={setTheme}
           />
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden lg:hidden">
+        <div className="md:hidden">
           <MobileNav
             isAuthenticated={isAuthenticated}
             user={user}
@@ -149,7 +150,7 @@ const Navbar = () => {
             cartItemsCount={cartItemsCount}
             onProtectedNavigation={handleProtectedNavigation}
             onLogout={handleLogout}
-            onThemeChange={setTheme} // ✅ Now matches the type
+            onThemeChange={setTheme}
           />
         </div>
       </div>
@@ -166,26 +167,41 @@ const NavLinks = ({
   onProtectedNavigation,
 }: NavLinksProps) => {
   return (
-    <div className="hidden md:flex items-center gap-6">
-      <Link to="/">Home</Link>
+    <div className="hidden md:flex items-center gap-8">
+      <Link
+        to="/"
+        className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+      >
+        Home
+      </Link>
 
       {/* Protected Links */}
       {isAuthenticated ? (
         <>
-          <Link to="/profile">Profile</Link>
-          <Link to="/order/status">Order</Link>
+          <Link
+            to="/profile"
+            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+          >
+            Profile
+          </Link>
+          <Link
+            to="/order/status"
+            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+          >
+            Order
+          </Link>
         </>
       ) : (
         <>
           <button
             onClick={() => onProtectedNavigation("/profile")}
-            className="hover:text-orange transition-colors"
+            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Profile
           </button>
           <button
             onClick={() => onProtectedNavigation("/order/status")}
-            className="hover:text-orange transition-colors"
+            className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
           >
             Order
           </button>
@@ -194,18 +210,26 @@ const NavLinks = ({
 
       {/* Admin Menu */}
       {user?.admin && isAuthenticated && (
-        <Menubar>
+        <Menubar className="border-border">
           <MenubarMenu>
-            <MenubarTrigger>Dashboard</MenubarTrigger>
-            <MenubarContent>
+            <MenubarTrigger className="cursor-pointer text-foreground data-[state=open]:bg-accent">
+              Dashboard
+            </MenubarTrigger>
+            <MenubarContent className="bg-popover border-border">
               <Link to="/admin/restaurant">
-                <MenubarItem>Restaurant</MenubarItem>
+                <MenubarItem className="cursor-pointer hover:bg-accent">
+                  Restaurant
+                </MenubarItem>
               </Link>
               <Link to="/admin/menu">
-                <MenubarItem>Menu</MenubarItem>
+                <MenubarItem className="cursor-pointer hover:bg-accent">
+                  Menu
+                </MenubarItem>
               </Link>
               <Link to="/admin/orders">
-                <MenubarItem>Orders</MenubarItem>
+                <MenubarItem className="cursor-pointer hover:bg-accent">
+                  Orders
+                </MenubarItem>
               </Link>
             </MenubarContent>
           </MenubarMenu>
@@ -236,9 +260,11 @@ const NavActions = ({
       />
 
       {isAuthenticated && user && (
-        <Avatar>
+        <Avatar className="border-2 border-border">
           <AvatarImage src={user?.profilePicture} alt="profilephoto" />
-          <AvatarFallback>{user?.fullname?.charAt(0) || "U"}</AvatarFallback>
+          <AvatarFallback className="bg-primary text-primary-foreground">
+            {user?.fullname?.charAt(0) || "U"}
+          </AvatarFallback>
         </Avatar>
       )}
 
@@ -255,17 +281,23 @@ const NavActions = ({
 const ThemeToggle = ({ onThemeChange }: ThemeToggleProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="outline" size="icon">
+      <Button variant="outline" size="icon" className="border-border">
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem onClick={() => onThemeChange("light")}>
+    <DropdownMenuContent align="end" className="bg-popover border-border">
+      <DropdownMenuItem
+        onClick={() => onThemeChange("light")}
+        className="cursor-pointer hover:bg-accent"
+      >
         Light
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => onThemeChange("dark")}>
+      <DropdownMenuItem
+        onClick={() => onThemeChange("dark")}
+        className="cursor-pointer hover:bg-accent"
+      >
         Dark
       </DropdownMenuItem>
     </DropdownMenuContent>
@@ -279,19 +311,19 @@ const CartIcon = ({
   onProtectedNavigation,
 }: CartIconProps) => {
   const cartContent = (
-    <>
-      <ShoppingCart />
+    <Button variant="outline" size="icon" className="relative border-border">
+      <ShoppingCart className="h-5 w-5" />
       {itemCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
           {itemCount}
         </span>
       )}
-    </>
+    </Button>
   );
 
   if (isAuthenticated) {
     return (
-      <Link to="/cart" className="relative cursor-pointer">
+      <Link to="/cart" className="cursor-pointer">
         {cartContent}
       </Link>
     );
@@ -300,7 +332,7 @@ const CartIcon = ({
   return (
     <button
       onClick={() => onProtectedNavigation("/cart")}
-      className="relative cursor-pointer"
+      className="cursor-pointer"
     >
       {cartContent}
     </button>
@@ -315,7 +347,7 @@ const AuthButton = ({
 }: AuthButtonProps) => {
   if (loading) {
     return (
-      <Button className="bg-orange hover:bg-hoverOrange">
+      <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         Please wait
       </Button>
@@ -326,7 +358,7 @@ const AuthButton = ({
     return (
       <Button
         onClick={onLogout}
-        className="bg-orange hover:bg-hoverOrange flex items-center gap-2"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
       >
         <LogOut className="w-4 h-4" />
         Logout
@@ -336,7 +368,7 @@ const AuthButton = ({
 
   return (
     <Link to="/login">
-      <Button className="bg-orange hover:bg-hoverOrange flex items-center gap-2">
+      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2">
         <LogIn className="w-4 h-4" />
         Login
       </Button>
@@ -353,49 +385,49 @@ const MobileNav = ({
   onLogout,
   onThemeChange,
 }: MobileNavProps) => {
-  // ✅ Remove unused cartItemsCount
-  const { cart } = useCartStore(); // Only need cart for mobile display
+  const { cart } = useCartStore();
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           size={"icon"}
-          className="rounded-full bg-gray-200 text-black hover:bg-gray-200"
           variant="outline"
+          className="rounded-lg border-border"
         >
-          <Menu size={"18"} />
+          <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col">
+      <SheetContent className="flex flex-col bg-background border-border">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
-          <SheetTitle>Zaika Ghar</SheetTitle>
+          <SheetTitle className="text-foreground">Zaika Ghar</SheetTitle>
           <ThemeToggle onThemeChange={onThemeChange} />
         </SheetHeader>
-        <Separator className="my-2" />
-        <SheetDescription className="flex-1">
+        <Separator className="my-4 bg-border" />
+
+        <div className="flex-1 space-y-2">
           {/* Protected Mobile Links */}
           {isAuthenticated ? (
             <>
               <Link
                 to="/profile"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <User />
+                <User className="h-5 w-5" />
                 <span>Profile</span>
               </Link>
               <Link
                 to="/order/status"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <HandPlatter />
+                <HandPlatter className="h-5 w-5" />
                 <span>Order</span>
               </Link>
               <Link
                 to="/cart"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <ShoppingCart />
+                <ShoppingCart className="h-5 w-5" />
                 <span>Cart ({cartItemsCount})</span>
               </Link>
             </>
@@ -403,86 +435,89 @@ const MobileNav = ({
             <>
               <button
                 onClick={() => onProtectedNavigation("/profile")}
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
               >
-                <User />
+                <User className="h-5 w-5" />
                 <span>Profile</span>
               </button>
               <button
                 onClick={() => onProtectedNavigation("/order/status")}
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
               >
-                <HandPlatter />
+                <HandPlatter className="h-5 w-5" />
                 <span>Order</span>
               </button>
               <button
                 onClick={() => onProtectedNavigation("/cart")}
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium w-full text-left"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors w-full text-left"
               >
-                <ShoppingCart />
+                <ShoppingCart className="h-5 w-5" />
                 <span>Cart ({cart.length})</span>
               </button>
             </>
           )}
 
-          {/* Admin Links - Only show when authenticated and admin */}
+          {/* Admin Links */}
           {isAuthenticated && user?.admin && (
             <>
               <Link
                 to="/admin/menu"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <SquareMenu />
+                <SquareMenu className="h-5 w-5" />
                 <span>Menu</span>
               </Link>
               <Link
                 to="/admin/restaurant"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <UtensilsCrossed />
+                <UtensilsCrossed className="h-5 w-5" />
                 <span>Restaurant</span>
               </Link>
               <Link
                 to="/admin/orders"
-                className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+                className="flex items-center gap-4 hover:bg-accent px-3 py-3 rounded-lg cursor-pointer text-foreground font-medium transition-colors"
               >
-                <PackageCheck />
+                <PackageCheck className="h-5 w-5" />
                 <span>Restaurant Orders</span>
               </Link>
             </>
           )}
-        </SheetDescription>
-        <SheetFooter className="flex flex-col gap-4">
-          {/* User Info - Only show when authenticated */}
+        </div>
+
+        <SheetFooter className="flex flex-col gap-4 mt-6">
+          {/* User Info */}
           {isAuthenticated && user && (
-            <div className="flex flex-row items-center gap-2">
-              <Avatar>
+            <div className="flex items-center gap-3 p-3 bg-accent rounded-lg">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.profilePicture} />
-                <AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                   {user?.fullname?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
-              <h1 className="font-bold">{user.fullname || "User"}</h1>
+              <h1 className="font-semibold text-foreground text-sm">
+                {user.fullname || "User"}
+              </h1>
             </div>
           )}
 
           <SheetClose asChild>
             {loading ? (
-              <Button className="bg-orange hover:bg-hoverOrange w-full">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
               </Button>
             ) : isAuthenticated ? (
               <Button
                 onClick={onLogout}
-                className="bg-orange hover:bg-hoverOrange w-full flex items-center gap-2"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
               </Button>
             ) : (
               <Link to="/login" className="w-full">
-                <Button className="bg-orange hover:bg-hoverOrange w-full flex items-center gap-2">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full flex items-center gap-2">
                   <LogIn className="w-4 h-4" />
                   Login
                 </Button>
